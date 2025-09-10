@@ -1,0 +1,31 @@
+services:
+  php:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: vocabulate-php
+    restart: always
+    working_dir: /var/www
+    volumes:
+      - ../app:/var/www
+
+  nginx:
+    image: nginx:1.29-alpine
+    container_name: vocabulate-webserver
+    restart: always
+    ports:
+      - "9095:80"
+    volumes:
+      - ../app:/var/www
+      - ./nginx:/etc/nginx/conf.d
+
+  db:
+    image: mysql:8.0
+    container_name: vocabulate-db
+    volumes:
+      - ./storage/mysql:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306

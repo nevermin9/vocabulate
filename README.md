@@ -17,6 +17,7 @@ docker build -t [image-tag] -f ./docker/Dockerfile[.dev] .
 ```
 
 ## App structure
+```
 app/
 ├── public/
 ├── src/
@@ -31,3 +32,5 @@ docker/
 ├── docker-compose.yml
 ├── nginx/
     └── nginx.conf
+
+```

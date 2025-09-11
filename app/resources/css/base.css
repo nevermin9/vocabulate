@@ -1,0 +1,31 @@
+*, 
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+:root {
+    color-scheme: light dark;
+    &:has(#dark-theme-radio:checked) {
+        color-scheme: dark;
+    }
+    &:has(#light-theme-radio:checked) {
+        color-scheme: light;
+    }
+
+    --app-bg-light: #fff;
+    --app-bg-dark: oklch(13% .028 261.692);
+    /* --app-bg: light-dark(var(--app-bg-light), var(--app-bg-dark)); */
+    --app-bg: light-dark(#fff, oklch(13% .028 261.692));
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100dvh;
+    background-color: var(--app-bg);
+}

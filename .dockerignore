@@ -1,3 +1,4 @@
 **/tests/
 **/vendor/
 **/storage/
+**/.env

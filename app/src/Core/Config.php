@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\Core;
 
 /**
 * @property-read ?array db
@@ -10,7 +10,7 @@ final class Config
 {
     private array $config;
 
-    public function __construct($env)
+    public function __construct(array $env)
     {
         $this->config = [
             'db' => [

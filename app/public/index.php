@@ -3,13 +3,18 @@ declare(strict_types=1);
 
 require __DIR__ . "/../vendor/autoload.php";
 
-use App\Application;
-use App\Request;
-use App\Router;
-use App\Controllers\HomeController;
-use Dotenv\Dotenv;
+require_once __DIR__ . "/../src/helpers/init.php";
 
-define('VIEWS_DIR', __DIR__ . "/../views");
+use Dotenv\Dotenv;
+use App\Core\Application;
+use App\Core\Config;
+use App\Core\Request;
+use App\Core\Router;
+use App\Controllers\HomeController;
+use App\Controllers\LoginController;
+use App\Controllers\RegistrationController;
+
+define('VIEWS_DIR', __DIR__ . "/../src/Views");
 
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
@@ -17,7 +22,12 @@ $dotenv->load();
 $router = new Router();
 
 $router
-    ->get("/", [HomeController::class, "index"]);
+    ->get("/", [HomeController::class, "index"])
+    ->get("/registration", [RegistrationController::class, "index"])
+    ->post("/register", [RegistrationController::class, "register"])
+    ->get("/login", [LoginController::class, "index"]);
 
-new Application($router)->run();
+
+
+new Application($router, new Config($_ENV))->run();
 

@@ -1,14 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\Core;
 
-use App\Router;
-use App\Request;
-use App\Config;
-use App\DB;
-
-// class DataBase;
+use App\Core\Router;
+use App\Core\Request;
+use App\Core\Config;
+use App\Core\DB;
 
 final class Application
 {
@@ -20,7 +18,7 @@ final class Application
     {
         static::$request = new Request();
         static::$config = $config;
-        static::$db = new DB(static::$config);
+        static::$db = new DB(static::$config->db);
     }
 
     public static function request(): Request

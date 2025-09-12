@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
-
-use App\Config;
+namespace App\Core;
 
 /**
 * @mixin \PDO
@@ -12,13 +10,13 @@ final class DB
 {
     private \PDO $pdo;
 
-    public function __construct(Config $config)
+    public function __construct(array $config)
     {
         $host = $config['host'];
         $driver = $config['driver'];
-        $dbname = $config['dbname'];
+        $dbname = $config['name'];
         $user = $config['user'];
-        $pass = $config['pass'];
+        $pass = $config['password'];
         $options = $config['options'] ?? [
             \PDO::ATTR_EMULATE_PREPARES => false,
             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC
@@ -35,4 +33,4 @@ final class DB
     {
         return call_user_func_array([$this->pdo, $name], $arguments);
     }
-
+}

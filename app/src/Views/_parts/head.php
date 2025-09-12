@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <style>
-        <?php require __DIR__ . "/../../resources/css/index.php" ?>
+        <?php require __DIR__ . "/../../../resources/css/index.php" ?>
         </style>
 
         <title>

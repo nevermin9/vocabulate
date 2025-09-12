@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\Core;
 
 final class Request
 {
@@ -19,7 +19,7 @@ final class Request
         $this->uri = $_SERVER['REQUEST_URI'];
         $this->cookies = $_COOKIE;
 
-        if ($this->method === "post" && $this->headers['Content-Type'] === 'application/json') {
+        if ($this->method === "post" && isset($this->headers['Content-Type']) && $this->headers['Content-Type'] === 'application/json') {
             $json = file_get_contents('php://input');
             $this->data = (array) json_decode($json);
         } elseif ($this->method === "post") {
@@ -37,7 +37,7 @@ final class Request
                 continue;
             }
 
-            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', substr($name, 5))));
+            $header = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
             $headers[$header] = $value;
         }
 

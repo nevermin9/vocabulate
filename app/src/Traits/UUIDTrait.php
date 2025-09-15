@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
-trait UniqueTrait {
+trait UUIDTrait {
     private function generateIdBytes(): string
     {
         return Uuid::uuid7()->getBytes();

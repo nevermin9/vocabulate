@@ -2,17 +2,11 @@
 <?php require "_parts/head.php"; ?>
 
 <main>
-    <form method="POST" action="/register">
-        <!-- <label> -->
-        <!--     Username -->
-        <!---->
-        <!--     <input  -->
-        <!--         type="text" -->
-        <!--         name="username" -->
-        <!--         maxlength="50" -->
-        <!--     /> -->
-        <!-- </label> -->
-
+    <form
+        class="auth-form"
+        method="POST"
+        action="/register"
+    >
         <label>
             Email*
 
@@ -50,6 +44,12 @@
             Register
         </button>
     </form>
+
+    <div>
+        <a href="/login">
+            Login
+        </a>
+    </div>
 </main>
 
 <?php require  "_parts/footer.php"; ?>

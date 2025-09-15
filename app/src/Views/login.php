@@ -2,7 +2,9 @@
 <?php require "_parts/head.php"; ?>
 
 <main>
-    <form>
+    <form
+        class="auth-form"
+    >
         <label>
             Email
 
@@ -27,6 +29,12 @@
             Login
         </button>
     </form>
+
+    <div>
+        <a href="/registration">
+            Register
+        </a>
+    </div>
 </main>
 
 <?php require  "_parts/footer.php"; ?>

@@ -6,21 +6,69 @@
     </h1>
 
     <ul class="stack-list">
-        <?php for ($i=0; $i < 10; $i++): ?>
+        <li>
+            <div class="stack">
+                <div class="stack__card  stack__card--top">
+                    <button 
+                        data-open-dialog
+                        type="button"
+                    >
+                        +
+                    </button>
+                </div>
+            </div>
+        </li>
+        <?php foreach ($this->params['stacks'] as $i => $stack): ?>
         <li>
             <div class="stack" data-stack-index="<?php echo $i ?>">
                 <div class="stack__card  stack__card--bottom"></div>
                 <div class="stack__card  stack__card--middle"></div>
 
                 <div class="stack__card  stack__card--top">
-                    <h3>
-                        name of the stack
-                    </h3>
+                    <a href="/stack-overview">
+                        <?php echo htmlspecialchars($stack['name']) ?>
+                    </a>
                 </div>
             </div>
         </li>
-        <?php endfor ?>
+        <?php endforeach; ?>
     </ul>
+
+    <dialog data-dialog>
+        <div>
+            <form class="create-stack-form">
+                <label>
+                    Stack's name
+                    <input type="text" name="stack-name" required maxlength="99" />
+                </label>
+
+                <label>
+                    Words language
+
+                    <select name="stack-language" required>
+                        <option
+                            value=""
+                            disabled
+                            selected
+                        >Please, select language</option>
+                        <?php foreach ($this->params['languages'] as $i => $lang): ?>
+                        <option value="<?php echo htmlspecialchars($lang['code']) ?>">
+                            <?php echo htmlspecialchars($lang['name']) ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+
+                <button formmethod="dialog" formnovalidate>
+                    cancel
+                </button>
+
+                <button>
+                    submit
+                </button>
+            </form>
+        </div>
+    </dialog>
 
     <script>
     const stacks = document.querySelectorAll("[data-stack-index]");
@@ -36,8 +84,21 @@
         stack.style.setProperty("--bottom-rotate", `${bottom}deg`);
         stack.style.setProperty("--middle-rotate", `${middle}deg`);
     }
+    </script>
 
+    <script>
+    const openDialogBtn = document.querySelector("[data-open-dialog]");
+    const dialog = document.querySelector("[data-dialog]");
 
+    openDialogBtn.addEventListener("click", () => {
+        dialog.showModal();
+    });
+
+    dialog.addEventListener("click", (e) => {
+        if (e.target.matches("dialog[data-dialog]")) {
+            dialog.close();
+        }
+    });
     </script>
 </main>
 

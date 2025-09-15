@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Application;
-use App\Traits\UniqueTrait;
+use App\Traits\UUIDTrait;
 
 class User
 {
-    use UniqueTrait;
+    use UUIDTrait;
 
-    protected ?string $id = null;
+    public readonly ?string $id;
     protected ?string $aiApiKey = null;
+    protected ?string $createdAt = null;
 
     public function __construct(
         protected string $username,
@@ -21,7 +22,7 @@ class User
     {
     }
 
-    public function create()
+    public function create(): User
     {
         $db = Application::db();
         $id = $this->generateIdBytes();
@@ -39,7 +40,12 @@ class User
         ]);
 
         if ($ok) {
-            $this->id = $this->convertBytesToString($id);
+            $this->id = $id;
+            $stmt = $db->prepare("SELECT created_at FROM users WHERE id = :id");
+            $stmt->execute(["id" => $id]);
+            $this->createdAt = $stmt->fetchColumn();
         }
+
+        return $this;
     }
 }

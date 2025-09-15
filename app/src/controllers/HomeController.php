@@ -5,17 +5,25 @@ namespace App\Controllers;
 
 use App\Core\View;
 use App\Core\Application;
+use App\Models\Language;
+use App\Models\Stack;
+use App\Services\AuthService;
 
 class HomeController
 {
     public function index(): View
     {
-        $req = Application::request();
+        if (! AuthService::isAuthenticated()) {
+            redirect("/login", 302);
+        }
 
-        // if (! isset($req->headers['AUTHORIZATION'])) {
-        //     redirect("/login", 302);
-        // }
+        $stacks = Stack::getAll(AuthService::getUserId());
+        $langs = Language::getAll();
 
-        return View::make("index", ["documentTitle" => "lol"]);
+        return View::make("index", [
+            "documentTitle" => "lol",
+            "stacks" => $stacks,
+            "languages" => $langs
+        ]);
     }
 }

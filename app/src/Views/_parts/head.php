@@ -12,6 +12,13 @@
             <?php echo $this->params['documentTitle'] ?? 'Vocabulate' ?>
         </title>
 
+        <script blocking="render">
+        window.addEventListener('pagereveal', (e) => {
+            console.log({ pagereveal: e });
+            console.log({ pagerevealV: e.viewTransition });
+        });
+        </script>
+
         <script src="/js/main.js" async type="module"></script>
     </head>
 
@@ -32,7 +39,6 @@
                     light
                     <input id="light-theme-radio" type="radio" name="theme" value="light" />
                 </label>
-
             </fieldset>
 
             <script>

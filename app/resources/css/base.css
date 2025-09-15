@@ -1,9 +1,3 @@
-*, 
-*::after,
-*::before {
-    box-sizing: border-box;
-}
-
 :root {
     color-scheme: light dark;
     &:has(#dark-theme-radio:checked) {
@@ -18,6 +12,17 @@
     /* --app-bg: light-dark(var(--app-bg-light), var(--app-bg-dark)); */
     --app-bg: light-dark(#fff, oklch(13% .028 261.692));
 }
+
+@view-transition {
+    navigation: auto;
+}
+
+*, 
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
 
 html, body {
     height: 100%;

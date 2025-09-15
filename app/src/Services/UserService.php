@@ -7,7 +7,7 @@ use App\Models\User;
 
 final class UserService
 {
-    public function register(string $password, string $email)
+    public function register(string $password, string $email): User
     {
         // password should be validated beforehand
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -22,5 +22,7 @@ final class UserService
         $user = new User($username, $email, $passwordHash);
 
         $user->create();
+
+        return $user;
     }
 }

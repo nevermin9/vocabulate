@@ -50,7 +50,7 @@
                     localStorage.setItem(THEME_KEY, theme);
                 }
             };
-            [].forEach.call(radios, function(r) {
+            Array.from(radios).forEach(r => {
                 if (r.id.startsWith("light")) {
                     r.addEventListener("change", createListener("light"));
                 } else {

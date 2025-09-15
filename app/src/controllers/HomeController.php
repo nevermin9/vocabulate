@@ -12,9 +12,9 @@ class HomeController
     {
         $req = Application::request();
 
-        if (! isset($req->headers['AUTHORIZATION'])) {
-            redirect("/login", 302);
-        }
+        // if (! isset($req->headers['AUTHORIZATION'])) {
+        //     redirect("/login", 302);
+        // }
 
         return View::make("index", ["documentTitle" => "lol"]);
     }

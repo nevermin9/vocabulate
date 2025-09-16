@@ -20,8 +20,6 @@ define('VIEWS_DIR', __DIR__ . "/../src/Views");
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
-session_start();
-
 $router = new Router();
 
 $router
@@ -29,7 +27,11 @@ $router
     ->get("/registration", [RegistrationController::class, "index"])
     ->post("/register", [RegistrationController::class, "register"])
     ->get("/login", [LoginController::class, "index"])
-    ->get("/stack-overview", [StackOverviewController::class, "index"]);
+    ->post("/login", [LoginController::class, "login"])
+    ->get("/stack/:id", [StackOverviewController::class, "index"])
+    ->get("/logout", [LoginController::class, "logout"])
+    ->post("/stack/create", [HomeController::class, "createStack"])
+    ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"]);
 
 
 new Application($router, new Config($_ENV))->run();

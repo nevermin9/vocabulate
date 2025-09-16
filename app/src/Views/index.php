@@ -25,7 +25,7 @@
                 <div class="stack__card  stack__card--middle"></div>
 
                 <div class="stack__card  stack__card--top">
-                    <a href="/stack-overview">
+                    <a href="/stack/<?php echo htmlspecialchars($stack['id']) ?>">
                         <?php echo htmlspecialchars($stack['name']) ?>
                     </a>
                 </div>
@@ -36,7 +36,11 @@
 
     <dialog data-dialog>
         <div>
-            <form class="create-stack-form">
+            <form 
+                method="post"
+                action="/stack/create"
+                class="create-stack-form"
+            >
                 <label>
                     Stack's name
                     <input type="text" name="stack-name" required maxlength="99" />

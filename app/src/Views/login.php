@@ -4,6 +4,8 @@
 <main>
     <form
         class="auth-form"
+        action="/login"
+        method="post"
     >
         <label>
             Email

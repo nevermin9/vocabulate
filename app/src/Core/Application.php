@@ -42,7 +42,7 @@ final class Application
             echo $this->router->resolve(static::$request->method, static::$request->uri);
         } catch (\Throwable $e) {
             echo "error: ";
-            echo $e->getMessage();
+            echo $e->getFile() . $e->getLine() . "<br>" . $e->getTrace() . "<br>" . $e->getMessage();
         }
     }
 }

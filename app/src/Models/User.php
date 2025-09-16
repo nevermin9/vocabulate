@@ -17,7 +17,7 @@ class User
     public function __construct(
         protected string $username,
         protected string $email,
-        protected string $passwordHash,
+        public readonly string $passwordHash,
     )
     {
     }
@@ -47,5 +47,31 @@ class User
         }
 
         return $this;
+    }
+
+    public static function get(string $email): ?User
+    {
+        $db = Application::db();
+
+        $stmt = $db->prepare(
+            "SELECT id, username, email, password_hash, ai_api_key, created_at
+            FROM users
+            WHERE email = :email;"
+        );
+
+        $ok = $stmt->execute(["email" => $email]);
+        $data = $ok ? $stmt->fetch() : false;
+
+        if ($data) {
+            $user = new User($data['username'], $data['email'], $data['password_hash']);
+
+            $user->id = $data['id'];
+            $user->aiApiKey = $data['ai_api_key'];
+            $user->createdAt = $data['created_at'];
+
+            return $user;
+        }
+
+        return null;
     }
 }

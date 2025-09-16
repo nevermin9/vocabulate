@@ -5,12 +5,13 @@ namespace App\Core;
 
 final class Request
 {
-    public string $method;
-    public array $data;
-    public string $uri;
-    public string $host; 
-    public array $headers;
-    public array $cookies;
+    public readonly string $method;
+    public readonly array $data;
+    public readonly string $uri;
+    public readonly string $host; 
+    public readonly array $headers;
+    public readonly array $cookies;
+    public readonly array $params;
 
     public function __construct()
     {
@@ -42,6 +43,12 @@ final class Request
         }
 
         return $headers;
+    }
 
+    public function setParams(array $params)
+    {
+        if (! $this->params) {
+            $this->params = $params;
+        }
     }
 }

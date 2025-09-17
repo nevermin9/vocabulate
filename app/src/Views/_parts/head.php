@@ -23,6 +23,8 @@
     </head>
 
     <body>
+        <?php require "app-overlay.php"; ?>
+
         <header>
             <fieldset>
                 <!-- <label> -->

@@ -10,11 +10,6 @@
         <div class="app-overlay__grid">
             <menu class="app-overlay__menu-btns">
                 <li>
-                    <div style="width: 100px; height: 100px; background-color: green;"></div>
-
-                </li>
-
-                <li>
                     <button
                         type="button"
                     >
@@ -47,8 +42,7 @@
 <script>
 const appOverlayHandle = document.getElementById("app-overlay-handle");
 const appOverlay = document.getElementById("app-overlay");
-// const INIT_TRANSLATE = -100;
-const INIT_TRANSLATE = 0;
+const INIT_TRANSLATE = -100;
 let currentTranslate = INIT_TRANSLATE;
 let startY = 0, startTranslate = -100, isDragging = false;
 const overlayHeight = appOverlay.offsetHeight;

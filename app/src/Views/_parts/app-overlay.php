@@ -2,7 +2,41 @@
     class="app-overlay"
     id="app-overlay"
 >
-    <p>I am system overlay</p>
+    <div class="app-overlay__inner">
+        <div class="app-overlay__theme-switcher">
+            <?php require "theme-switcher.php"; ?>
+        </div>
+
+        <div class="app-overlay__grid">
+            <menu class="app-overlay__menu-btns">
+                <li>
+                    <div style="width: 100px; height: 100px; background-color: green;"></div>
+
+                </li>
+
+                <li>
+                    <button
+                        type="button"
+                    >
+                        Profile
+                    </button>
+                </li>
+
+                <li>
+                    <button
+                        type="button"
+                    >
+                        Theme
+                    </button>
+                </li>
+            </menu>
+
+            <div class="app-overlay__menu">
+                <input type="text" />
+
+            </div>
+        </div>
+    </div>
 
     <div
         id="app-overlay-handle"
@@ -13,19 +47,41 @@
 <script>
 const appOverlayHandle = document.getElementById("app-overlay-handle");
 const appOverlay = document.getElementById("app-overlay");
-const INIT_TRANSLATE = -100;
+// const INIT_TRANSLATE = -100;
+const INIT_TRANSLATE = 0;
 let currentTranslate = INIT_TRANSLATE;
 let startY = 0, startTranslate = -100, isDragging = false;
 const overlayHeight = appOverlay.offsetHeight;
 
 appOverlay.style.transform = `translateY(${currentTranslate}%)`;
 
+function hideOverlay(e) {
+    if (e.target === appOverlay) {
+        appOverlay.style.transform = `translateY(${INIT_TRANSLATE}%)`;
+        currentTranslate = INIT_TRANSLATE;
+        appOverlay.removeEventListener("pointerdown", hideOverlay);
+    }
+}
+
+function handlePointerUp(e) {
+    isDragging = false;
+    currentTranslate = currentTranslate > -50 ? 0 : INIT_TRANSLATE;
+    appOverlay.style.transform = `translateY(${currentTranslate}%)`;
+    appOverlayHandle.releasePointerCapture(e.pointerId);
+
+    window.removeEventListener("pointerup", handlePointerUp);
+
+    appOverlay.addEventListener("pointerdown", hideOverlay);
+}
+
 appOverlayHandle.addEventListener("pointerdown", (e) => {
     isDragging = true;
     startY = e.clientY;
     startTranslate = currentTranslate;
     appOverlayHandle.setPointerCapture(e.pointerId);
+    window.addEventListener("pointerup", handlePointerUp);
 });
+
 appOverlayHandle.addEventListener("pointermove", (e) => {
     if (!isDragging) return;
     const deltaY = e.clientY - startY;
@@ -35,19 +91,20 @@ appOverlayHandle.addEventListener("pointermove", (e) => {
     appOverlay.style.transform = `translateY(${newTranslate}%)`;
     currentTranslate = newTranslate;
 });
-appOverlayHandle.addEventListener("pointerup", (e) => {
-    isDragging = false;
-    currentTranslate = currentTranslate > -50 ? 0 : INIT_TRANSLATE;
-    appOverlay.style.transform = `translateY(${currentTranslate}%)`;
-    appOverlayHandle.releasePointerCapture(e.pointerId);
-});
 
-appOverlay.addEventListener("pointerdown", (e) => {
-    if (e.target === appOverlay) {
-        appOverlay.style.transform = `translateY(${INIT_TRANSLATE}%)`;
-    }
-});
-
+// appOverlayHandle.addEventListener("pointerup", (e) => {
+//     isDragging = false;
+//     currentTranslate = currentTranslate > -50 ? 0 : INIT_TRANSLATE;
+//     appOverlay.style.transform = `translateY(${currentTranslate}%)`;
+//     appOverlayHandle.releasePointerCapture(e.pointerId);
+//
+//     appOverlay.addEventListener("pointerdown", (e) => {
+//         if (e.target === appOverlay) {
+//             appOverlay.style.transform = `translateY(${INIT_TRANSLATE}%)`;
+//             currentTranslate = INIT_TRANSLATE;
+//         }
+//     }, { once: true });
+// });
 </script>
 
 

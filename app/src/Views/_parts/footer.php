@@ -9,5 +9,7 @@
     });
 
     </script>
+
+    <?php require "svg-sprite.html"; ?>
     </body>
 </html>

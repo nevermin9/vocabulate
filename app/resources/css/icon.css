@@ -1,0 +1,9 @@
+.icon {
+    display: inline-block;
+    width: var(--size, 24px);
+    height: var(--height, var(--size, 24px));
+
+    & > * {
+        fill: currentColor;
+    }
+}

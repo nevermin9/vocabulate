@@ -1,10 +1,3 @@
-.app-overlay-btn {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
 .app-overlay {
     position: fixed;
     top: 0;
@@ -29,5 +22,29 @@
         border-radius: 4px;
         margin: 12px auto;
         cursor: grab;
+        /* touch-action: none; */
+    }
+
+    .app-overlay__inner {
+        height: 100%;
+        padding: 64px 128px;
+        pointer-events: none;
+    }
+
+    .app-overlay__theme-switcher {
+        pointer-events: auto;
+    }
+
+    .app-overlay__grid {
+        display: grid;
+        grid-template-columns: 270px 1fr;
+        grid-template-rows: 1fr;
+        pointer-events: auto;
+    }
+
+    .app-overlay__menu-btns {
+        padding: 0;
+        margin: 0;
+        list-style: none;
     }
 }

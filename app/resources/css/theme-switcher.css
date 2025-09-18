@@ -1,0 +1,61 @@
+.theme-switcher {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min-content;
+    margin-inline: 0;
+    min-inline-size: 0;
+    padding-block: 0;
+    padding-inline: 0;
+    border: 0;
+    border-radius: 20px;
+    background-color: darkgray;
+    outline: 1.5px solid white;
+
+    .theme-switcher__inner {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+    }
+
+    .theme-switcher__inner.theme-switcher__inner--clipped {
+        position: absolute;
+        inset: 0;
+        background-color: gray;
+        clip-path: circle(20% at 20px);
+        transition: clip-path .2s ease-in;
+    }
+
+    .theme-switcher__inner:has(input[value='system']:checked) + .theme-switcher__inner.theme-switcher__inner--clipped {
+        clip-path: circle(20% at 21px);
+    }
+
+    .theme-switcher__inner:has(input[value='dark']:checked) + .theme-switcher__inner.theme-switcher__inner--clipped {
+        clip-path: circle(20% at 60px);
+    }
+
+    .theme-switcher__inner:has(input[value='light']:checked) + .theme-switcher__inner.theme-switcher__inner--clipped {
+        clip-path: circle(20% at 102px);
+    }
+
+    .theme-switcher__label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 50%;
+    }
+
+    .theme-switcher__label.theme-switcher__label--shadow {
+        filter: drop-shadow(16px 16px 10px black);
+    }
+
+
+    input {
+        flex: 0;
+        visibility: hidden;
+        width: 0;
+        height: 0;
+    }
+}

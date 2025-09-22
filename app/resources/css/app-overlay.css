@@ -22,7 +22,6 @@
         border-radius: 4px;
         margin: 12px auto;
         cursor: grab;
-        /* touch-action: none; */
     }
 
     .app-overlay__inner {

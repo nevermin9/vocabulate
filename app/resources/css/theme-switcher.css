@@ -1,3 +1,11 @@
+.theme-switcher-box {
+    display: flex;
+
+    &.theme-switcher-box--center {
+        justify-content: center;
+    }
+}
+
 .theme-switcher {
     position: relative;
     display: flex;
@@ -16,26 +24,26 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 1px;
-    }
 
-    .theme-switcher__inner.theme-switcher__inner--clipped {
-        position: absolute;
-        inset: 0;
-        background-color: gray;
-        clip-path: circle(20% at 20px);
-        transition: clip-path .2s ease-in;
-    }
+        &.theme-switcher__inner--clipped {
+            position: absolute;
+            inset: 0;
+            background-color: gray;
+            clip-path: circle(20% at 20px);
+            transition: clip-path .2s ease-in;
+        }
 
-    .theme-switcher__inner:has(input[value='system']:checked) + .theme-switcher__inner.theme-switcher__inner--clipped {
-        clip-path: circle(20% at 21px);
-    }
+        &:has(input[value='system']:checked) + &.theme-switcher__inner--clipped {
+            clip-path: circle(20% at 21px);
+        }
 
-    .theme-switcher__inner:has(input[value='dark']:checked) + .theme-switcher__inner.theme-switcher__inner--clipped {
-        clip-path: circle(20% at 60px);
-    }
+        &:has(input[value='dark']:checked) + &.theme-switcher__inner--clipped {
+            clip-path: circle(20% at 60px);
+        }
 
-    .theme-switcher__inner:has(input[value='light']:checked) + .theme-switcher__inner.theme-switcher__inner--clipped {
-        clip-path: circle(20% at 102px);
+        &:has(input[value='light']:checked) + &.theme-switcher__inner--clipped {
+            clip-path: circle(20% at 102px);
+        }
     }
 
     .theme-switcher__label {

@@ -1,5 +1,4 @@
 <fieldset class="theme-switcher">
-
     <div class="theme-switcher__inner">
         <label class="theme-switcher__label">
             <svg class="icon">
@@ -63,22 +62,28 @@
 </fieldset>
 
 <script>
-// set on load
 const THEME_KEY = "app-theme";
-const themeFromStorage = localStorage.getItem(THEME_KEY);
-if (themeFromStorage) {
-    const radio = document.getElementById(`${themeFromStorage}-theme-radio`);
-    radio.checked = true;
-}
-// remember
-const radios = document.querySelectorAll("input[name='theme']");
-const createListener = (theme) => (e) => {
-    if (e.target.checked) {
-        localStorage.setItem(THEME_KEY, theme);
+const init = () => {
+    const themeFromStorage = localStorage.getItem(THEME_KEY);
+    if (themeFromStorage) {
+        const radio = document.getElementById(`${themeFromStorage}-theme-radio`);
+        radio.checked = true;
     }
 };
-Array.from(radios).forEach(r => {
-    r.addEventListener("change", createListener(r.value));
-});
+
+const initThemeContols = () => {
+    const radios = document.querySelectorAll("input[name='theme']");
+    const createListener = (theme) => (e) => {
+        if (e.target.checked) {
+            localStorage.setItem(THEME_KEY, theme);
+        }
+    };
+    Array.from(radios).forEach(r => {
+        r.addEventListener("change", createListener(r.value));
+    });
+};
+
+init();
+initThemeContols();
 </script>
 

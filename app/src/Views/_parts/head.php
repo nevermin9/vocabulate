@@ -19,19 +19,18 @@
         });
         </script>
 
-        <script src="/js/main.js" async type="module"></script>
+        <script src="/js/main.js" defer type="module"></script>
     </head>
 
     <body>
-        <?php require "app-overlay.php"; ?>
+        <?php
+            if (isset($_SESSION['user-id'])) {
+                require "app-overlay.php"; 
+            }
+        ?>
 
         <header>
-
-
             <div>
-                <a href="/logout">
-                    Logout
-                </a>
             </div>
         </header>
 

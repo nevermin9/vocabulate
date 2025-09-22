@@ -6,12 +6,17 @@ namespace App\Controllers;
 use App\Core\Application;
 use App\Core\View;
 use App\Models\Flashcard;
+use App\Services\AuthService;
 use App\Services\FlashcardService;
 
 final class StackOverviewController
 {
     public function index(string $id): View
     {
+        if (! AuthService::isAuthenticated()) {
+            redirect("/login");
+        }
+
         $flashcards = Flashcard::getAllByStack((int) $id);
 
         return View::make("stack-overview", [

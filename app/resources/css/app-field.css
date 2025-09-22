@@ -1,0 +1,32 @@
+.app-field {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+
+    & .app-field__label {
+        font-size: 0.875rem;
+    }
+
+    & .app-field__input {
+        padding: 0 8px;
+        height: 40px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: transparent;
+        border-radius: var(--border-radius);
+        outline-color: #656E78;
+        outline-width: 1px;
+        outline-style: solid;
+        background-color: var(--app-stone);
+        transition: .2s;
+
+        &:hover {
+            outline-color: color-mix(in srgb, var(--app-blue), white 50%);
+        }
+
+        &:focus {
+            outline-color: transparent;
+            border-color: var(--app-blue);
+        }
+    }
+}

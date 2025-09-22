@@ -7,10 +7,22 @@
         color-scheme: light;
     }
 
-    --app-bg-light: #fff;
-    --app-bg-dark: oklch(13% .028 261.692);
-    /* --app-bg: light-dark(var(--app-bg-light), var(--app-bg-dark)); */
-    --app-bg: light-dark(#fff, oklch(13% .028 261.692));
+    /* colors */
+    --app-white: #E9F1F7;
+    --app-blue: rgb(34, 116, 255);
+    --app-black: #131B23;
+    --app-stone: #3a434c;
+    --app-black-text: oklch(20.8% 0.042 265.755);
+
+
+    --app-bg-light: var(--app-white);
+    --app-bg-dark: var(--app-black);
+    --app-color-light: var(--app-black-text); 
+    --app-color-dark: var(--app-white);
+    --border-radius: 8px;
+
+    --app-bg: light-dark(var(--app-bg-light), var(--app-bg-dark));
+    --app-color: light-dark(var(--app-color-light), var(--app-color-dark));
 }
 
 @view-transition {
@@ -37,12 +49,14 @@ html, body {
 }
 
 body {
-    min-height: 100dvh;
+    height: 100dvh;
     font-family: Inter, system-ui;
     font-size: 1rem;
     line-height: 1.2;
     letter-spacing: 0.03em;
+    color: var(--app-color);
     background-color: var(--app-bg);
+    overflow: hidden;
 }
 
 @media (min-width: 601px) {
@@ -52,5 +66,8 @@ body {
 
 
 main {
+    height: 100%;
     padding: 0 32px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }

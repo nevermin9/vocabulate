@@ -24,6 +24,12 @@
                         Theme
                     </button>
                 </li>
+
+                <li>
+                    <a href="/logout">
+                        Logout
+                    </a>
+                </li>
             </menu>
 
             <div class="app-overlay__menu">

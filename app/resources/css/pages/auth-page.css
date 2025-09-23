@@ -1,22 +1,22 @@
-.login-page {
+.auth-page {
     display: flex;
     flex-direction: column;
     padding: 32px;
 
-    .login-page__title {
+    .auth-page__title {
         margin: 0
     }
 
-    .login-page__login-box {
+    .auth-page__auth-box {
         margin: auto;
         width: min(370px, 100%);
     }
 
-    .login-page__theme-switcher {
+    .auth-page__theme-switcher {
         margin-top: auto;
     }
 
-    .login-page__sub-txt {
+    .auth-page__sub-txt {
         text-align: center;
         font-size: .85rem;
     }

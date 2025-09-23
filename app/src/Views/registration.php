@@ -1,55 +1,88 @@
 
 <?php require "_parts/head.php"; ?>
 
-<main>
-    <form
-        class="auth-form"
-        method="POST"
-        action="/register"
+<main class="auth-page">
+    <h1 class="">
+        Vocabulate
+    </h1>
+
+    <div
+        class="auth-page__auth-box auth-box"
     >
-        <label>
-            Email*
+        <h3 class="auth-page__title">
+            Sign Up
+        </h3>
 
-            <input 
-                type="email"
-                name="email"
-                maxlength="100"
-                required
-            />
-        </label>
+        <form
+            class="auth-form"
+            method="POST"
+            action="/register"
+        >
+            <label class="auth-form__field  app-field">
+                <span class="app-field__label">
+                    Email*
+                </span>
 
-        <label>
-            Password*
+                <input 
+                    class="app-field__input"
+                    type="email"
+                    name="email"
+                    maxlength="100"
+                    required
+                />
+            </label>
 
-            <input 
-                type="password"
-                name="password"
-                maxlength="50"
-                required
-            />
-        </label>
+            <label class="auth-form__field  app-field">
+                <span class="app-field__label">
+                    Password*
+                </span>
 
-        <label>
-            Repeat password
+                <input 
+                    class="app-field__input"
+                    type="password"
+                    name="password"
+                    maxlength="50"
+                    required
+                />
+            </label>
 
-            <input 
-                type="password"
-                name="repeat_password"
-                maxlength="50"
-                required
-            />
-        </label>
+            <label class="auth-form__field  app-field">
+                <span class="app-field__label">
+                    Repeat password*
+                </span>
 
-        <button value="Register">
-            Register
-        </button>
-    </form>
+                <input 
+                    class="app-field__input"
+                    type="password"
+                    name="repeat_password"
+                    maxlength="50"
+                    required
+                />
+            </label>
 
-    <div>
-        <a href="/login">
-            Login
-        </a>
+            <button 
+                class="auth-form__btn  app-btn app-btn--primary"
+                value="signup"
+            >
+                Sign up
+            </button>
+        </form>
+
+        <p class="auth-page__sub-txt">
+            Already have an account?
+
+            <a 
+                class="app-link"
+                href="/login"
+            >
+                Sign in here.
+            </a>
+        </p>
     </div>
+
+    <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
+        <?php require "_parts/theme-switcher.php"; ?>
+    </aside>
 </main>
 
 <?php require  "_parts/footer.php"; ?>

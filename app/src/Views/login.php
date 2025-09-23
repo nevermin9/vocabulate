@@ -1,13 +1,13 @@
 
 <?php require "_parts/head.php"; ?>
 
-<main class="login-page">
+<main class="auth-page">
     <h1 class="">
         Vocabulate
     </h1>
 
-    <div class="login-page__login-box login-box">
-        <h3 class="login-page__title">
+    <div class="auth-page__auth-box auth-box">
+        <h3 class="auth-page__title">
             Sign In
         </h3>
 
@@ -52,7 +52,7 @@
             </button>
         </form>
 
-        <p class="login-page__sub-txt">
+        <p class="auth-page__sub-txt">
             Don't have an account yet?
             You can
 
@@ -65,7 +65,7 @@
         </p>
     </div>
 
-    <aside class="logoin-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
+    <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
         <?php require "_parts/theme-switcher.php"; ?>
     </aside>
 </main>

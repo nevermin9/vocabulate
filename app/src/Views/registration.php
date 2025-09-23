@@ -64,7 +64,7 @@
                 class="auth-form__btn  app-btn app-btn--primary"
                 value="signup"
             >
-                Sign up
+                Sign Up
             </button>
         </form>
 
@@ -75,7 +75,7 @@
                 class="app-link"
                 href="/login"
             >
-                Sign in here.
+                Log in here.
             </a>
         </p>
     </div>

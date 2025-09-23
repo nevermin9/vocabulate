@@ -8,7 +8,7 @@
 
     <div class="auth-page__auth-box auth-box">
         <h3 class="auth-page__title">
-            Sign In
+            Log In
         </h3>
 
         <form
@@ -48,7 +48,7 @@
                 class="auth-form__btn  app-btn app-btn--primary"
                 value="login"
             >
-                Login
+                Log In
             </button>
         </form>
 

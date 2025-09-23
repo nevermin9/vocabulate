@@ -14,14 +14,14 @@
         border-style: solid;
         border-color: transparent;
         border-radius: var(--border-radius);
-        outline-color: #656E78;
+        outline-color: var(--outline-inactive);
         outline-width: 1px;
         outline-style: solid;
-        background-color: var(--app-stone);
+        background-color: var(--input-bg);
         transition: .2s;
 
         &:hover {
-            outline-color: color-mix(in srgb, var(--app-blue), white 50%);
+            outline-color: var(--app-light-blue);
         }
 
         &:focus {

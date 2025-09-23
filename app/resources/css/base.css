@@ -10,9 +10,13 @@
     /* colors */
     --app-white: #E9F1F7;
     --app-blue: rgb(34, 116, 255);
+    --app-light-blue: color-mix(in srgb, var(--app-blue), white 50%);
     --app-black: #131B23;
     --app-stone: #3a434c;
     --app-black-text: oklch(20.8% 0.042 265.755);
+    --app-light-stone: #656E78;
+    --app-light-stone-2: #d4dae0;
+    --app-light-gray: #c3c4c4;
 
 
     --app-bg-light: var(--app-white);
@@ -20,6 +24,8 @@
     --app-color-light: var(--app-black-text); 
     --app-color-dark: var(--app-white);
     --border-radius: 8px;
+    --outline-inactive: light-dark(var(--app-light-gray),var(--app-light-stone));
+    --input-bg: light-dark(var(--app-light-stone-2), var(--app-stone));
 
     --app-bg: light-dark(var(--app-bg-light), var(--app-bg-dark));
     --app-color: light-dark(var(--app-color-light), var(--app-color-dark));

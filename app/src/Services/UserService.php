@@ -26,7 +26,7 @@ final class UserService
         return $user;
     }
 
-    public function verifyUser(string $password, string $email): ?User
+    public function verifyUser(string $password, string $email): array
     {
         $email = filter_var($email, FILTER_VALIDATE_EMAIL);
 
@@ -36,10 +36,14 @@ final class UserService
 
         $user = User::get($email);
 
-        if (password_verify($password, $user->passwordHash)) {
-            return $user;
+        if ($user) {
+            if (password_verify($password, $user->passwordHash)) {
+                return [$user, null];
+            }
         }
 
-        return null;
+        $errors = ["email" => "Invalid credentials"];
+
+        return [null, $errors];
     }
 }

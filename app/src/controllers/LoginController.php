@@ -10,20 +10,25 @@ use App\Services\UserService;
 
 final class LoginController
 {
+    private function renderLogin(array $errors = []): View
+    {
+        return View::make("login", ["token" => AuthService::getCSRF(), "errors" => $errors]);
+    }
+
     public function index(): View
     {
         if (AuthService::isAuthenticated()) {
             redirect("/", 302);
         }
 
-        return View::make("login");
+        return $this->renderLogin();
     }
 
     public function login(): View
     {
         $req = Application::request();
 
-        $user = new UserService()->verifyUser($req->data['password'], $req->data['email']);
+        [$user, $errors] = new UserService()->verifyUser($req->data['password'], $req->data['email']);
 
         if ($user) {
             AuthService::login($user->id);
@@ -31,7 +36,7 @@ final class LoginController
             die();
         }
 
-        return View::make("login");
+        return $this->renderLogin($errors);
     }
 
     public function logout(): void

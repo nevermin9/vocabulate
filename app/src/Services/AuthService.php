@@ -15,7 +15,7 @@ final class AuthService
     {
         static::ensureSession();
         session_regenerate_id(true);
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        static::generateCSRF(true);
         $_SESSION['user-id'] = $userId;
     }
 
@@ -42,6 +42,27 @@ final class AuthService
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
+        }
+    }
+
+    public static function getCSRF(): string
+    {
+        self::ensureSession();
+        self::generateCSRF();
+        return $_SESSION['csrf_token'];
+    }
+
+    public static function checkCSRF(string $userToken): bool
+    {
+        self::ensureSession();
+        return hash_equals($_SESSION['csrf_token'], $userToken);
+    }
+
+    private static function generateCSRF(bool $isForce = false): void
+    {
+        static::ensureSession();
+        if ($isForce || ! isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
     }
 }

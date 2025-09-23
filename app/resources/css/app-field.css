@@ -24,9 +24,32 @@
             outline-color: var(--app-light-blue);
         }
 
-        &:focus {
+        &:focus:not(&:user-invalid):not(.app-field__input--invalid) {
             outline-color: transparent;
             border-color: var(--app-blue);
         }
+
+        &:user-invalid {
+            outline-color: var(--app-red);
+        }
+
+        &:user-invalid:focus {
+            border-color: var(--app-red);
+            outline-color: transparent;
+        }
+
+        &.app-field__input--invalid {
+            outline-color: var(--app-red);
+
+            &:focus {
+                outline-color: transparent;
+                border-color: var(--app-red);
+            }
+        }
+    }
+
+    & .app-field__error-txt {
+        color: var(--app-red);
+        font-size: .65rem;
     }
 }

@@ -10,9 +10,14 @@ use App\Services\UserService;
 
 final class LoginController
 {
-    private function renderLogin(array $errors = []): View
+    private function renderLogin(string $email = '', string $password = '', array $errors = []): View
     {
-        return View::make("login", ["token" => AuthService::getCSRF(), "errors" => $errors]);
+        return View::make("login", [
+            "token" => AuthService::getCSRF(),
+            "errors" => $errors,
+            "email" => $email,
+            "password" => $password,
+        ]);
     }
 
     public function index(): View
@@ -32,11 +37,12 @@ final class LoginController
 
         if ($user) {
             AuthService::login($user->id);
+            // if user verified via email
             redirect("/");
             die();
         }
 
-        return $this->renderLogin($errors);
+        return $this->renderLogin($req->data['email'], $req->data['password'], $errors);
     }
 
     public function logout(): void

@@ -8,6 +8,7 @@
     }
 
     & .app-field__input {
+        width: 100%;
         padding: 0 8px;
         height: 40px;
         border-width: 2px;

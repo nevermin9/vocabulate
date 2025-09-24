@@ -10,24 +10,49 @@ use App\Services\UserService;
 
 final class RegistrationController
 {
+    public function renderRegistrationPage(
+        string $email = '',
+        string $password = '',
+        string $confirmPassword = '',
+        array $errors = []
+    ): View
+    {
+        return View::make("registration", [
+            "password_rules" => UserService::getPasswordRules(),
+            "email" => $email,
+            "password" => $password,
+            "confirm_password" => $confirmPassword,
+            "errors" => $errors,
+        ]);
+    }
+
     public function index(): View
     {
         if (AuthService::isAuthenticated()) {
             redirect("/", 302);
         }
 
-        return View::make("registration");
+        return $this->renderRegistrationPage();
     }
 
-    public function register(): void
+    public function register(): View
     {
 
         $req = Application::request();
 
-        $newUser = new UserService()->register($req->data['password'], $req->data['email']);
+        [$newUser, $errors] = new UserService()->register($req->data['password'], $req->data['confirm_password'], $req->data['email']);
 
-        AuthService::login($newUser->id);
+        if ($newUser) {
+            AuthService::login($newUser->id);
+            redirect("/");
+            die();
+        }
 
-        redirect("/");
+        return $this->renderRegistrationPage(
+            $req->data['email'],
+            $req->data['password'],
+            $req->data['confirm_password'],
+            $errors
+        );
     }
 }

@@ -7,4 +7,20 @@
     .auth-form__btn {
         margin-top: 1rem;
     }
+
+    .auth-form__field-rules {
+        margin: .25rem 0;
+        font-size: .65rem;
+        padding-left: 1rem;
+    }
+
+    .auth-form__field-rule {
+        color: light-dark(var(--app-stone), var(--app-light-gray));
+
+        &.auth-form__field-rule--invalid {
+            color: var(--app-red);
+            list-style-type: "✖ ";
+            transition: all .2s ease;
+        }
+    }
 }

@@ -22,10 +22,11 @@
                 </span>
 
                 <input 
-                    class="app-field__input  <?php echo ( ($this->params['errors']['email'] ?? null ) !== null ? 'app-field__input--invalid' : '' ) ?>"
+                    class="app-field__input  <?php echo ( $this->params['errors']['email'] ?? null ? 'app-field__input--invalid' : '' ) ?>"
                     type="email"
                     name="email"
                     maxlength="100"
+                    value="<?php echo htmlspecialchars($this->params['email'])  ?>"
                     required
                 />
 
@@ -46,15 +47,16 @@
                     id="password-input"
                     type="password"
                     name="password"
+                    value="<?php echo htmlspecialchars($this->params['password'])  ?>"
                     maxlength="50"
                     required
                 />
             </label>
 
-            <label class="app-checkbox auth-form__show-password-field">
+            <label class="app-checkbox">
                 <input 
                     id="show-pass-checkbox"
-                    class="app-checkbox__input auth-form__show-password-checkbox"
+                    class="app-checkbox__input"
                     type="checkbox"
                     title="show passwords"
                 />
@@ -68,7 +70,7 @@
                     </svg>
                 </div>
 
-                <span class="app-checkbox__label auth-form__show-password-label">Show password </span>
+                <span class="app-checkbox__label">Show password </span>
             </label>
 
             <input type="hidden" name="_token" value="<?php echo $this->params['token'] ?>" />

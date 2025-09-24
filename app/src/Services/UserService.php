@@ -4,18 +4,41 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use App\Validation\PasswordValidator;
 
 final class UserService
 {
-    public function register(string $password, string $email): User
+    public static function getPasswordRules(): array
     {
-        // password should be validated beforehand
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        return PasswordValidator::getRules();
+    }
+
+    public function register(string $password, string $confirmPassword, string $email): array
+    {
+        if ($password !== $confirmPassword) {
+            $errors['confirm_password'][] = "Passwords should match";
+        }
+
+        $passwordErrors = PasswordValidator::validate($password);
+
+        if (! empty($passwordErrors)) {
+            $errors['password'] = $passwordErrors;
+        }
+
         $email = filter_var($email, FILTER_VALIDATE_EMAIL);
 
         if (! $email) {
-            throw new \Exception("email is not valid");
+            $errors['email'] = "Email is not valid.";
         }
+
+        if (! empty($errors)) {
+            return [null, $errors];
+        }
+
+        // if email exists, finish registration and send a link to the user
+        // check by retrieving user by email OR by error from User
+
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $username = "user" . mt_rand(100, 999);
 
@@ -23,7 +46,7 @@ final class UserService
 
         $user->create();
 
-        return $user;
+        return [$user, null];
     }
 
     public function verifyUser(string $password, string $email): array

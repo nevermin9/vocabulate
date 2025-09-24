@@ -3,6 +3,7 @@ require "normalize.css";
 require "base.css";
 require "app-btn.css";
 require "app-link.css";
+require "app-checkbox.css";
 require "app-overlay.css";
 require "app-field.css";
 require "theme-switcher.css";

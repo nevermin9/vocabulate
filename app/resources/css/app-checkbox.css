@@ -1,0 +1,68 @@
+.app-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    gap: 8px;
+
+
+    &:hover .app-checkbox__custom {
+        outline-color: var(--app-light-blue);
+    }
+
+    &:focus .app-checkbox__custom {
+        outline-color: transparent;
+        border-color: var(--app-blue);
+    }
+
+
+    .app-checkbox__input {
+        display: none;
+
+        &:checked + .app-checkbox__custom {
+            background-color: var(--app-blue);
+            border-color: var(--app-blue);
+        }
+
+        &:checked + .app-checkbox__custom .app-checkbox__svg {
+            stroke-dashoffset: 10;
+        }
+    }
+
+    .app-checkbox__custom {
+        position: relative;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: transparent;
+        outline-color: var(--outline-inactive);
+        outline-width: 1px;
+        outline-style: solid;
+        background-color: var(--input-bg);
+        transition: all 0.3s ease;
+    }
+
+    .app-checkbox__svg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 18px;
+        height: 18px;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        stroke: var(--app-white);
+        stroke-dasharray: 50;
+        stroke-dashoffset: 50;
+        transition: stroke-dashoffset 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .app-checkbox__label {
+        font-size: 0.875rem;
+    }
+}

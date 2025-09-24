@@ -43,11 +43,32 @@
 
                 <input 
                     class="app-field__input  <?php echo ( ($this->params['errors']['email'] ?? null ) !== null ? 'app-field__input--invalid' : '' ) ?>"
+                    id="password-input"
                     type="password"
                     name="password"
                     maxlength="50"
                     required
                 />
+            </label>
+
+            <label class="app-checkbox auth-form__show-password-field">
+                <input 
+                    id="show-pass-checkbox"
+                    class="app-checkbox__input auth-form__show-password-checkbox"
+                    type="checkbox"
+                    title="show passwords"
+                />
+
+                <div class="app-checkbox__custom">
+                    <svg 
+                        class="app-checkbox__svg"
+                        viewBox="0 0 24 24"
+                    >
+                        <path d="M5 12l5 5l10-10"></path>
+                    </svg>
+                </div>
+
+                <span class="app-checkbox__label auth-form__show-password-label">Show password </span>
             </label>
 
             <input type="hidden" name="_token" value="<?php echo $this->params['token'] ?>" />
@@ -94,6 +115,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    const showPassInput = document.getElementById("show-pass-checkbox");
+    const passwordInput = document.getElementById("password-input");
+    showPassInput.addEventListener("change", (e) => {
+        if (e.target.checked) {
+            passwordInput.type = "text";
+            return;
+        }
+        passwordInput.type = "password";
+    });
 });
 </script>
 

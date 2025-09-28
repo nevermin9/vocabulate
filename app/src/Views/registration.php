@@ -103,6 +103,8 @@
                 <span class="app-checkbox__label">Show password </span>
             </label>
 
+            <input type="hidden" name="_token" value="<?php echo $this->params['token'] ?>" />
+
             <button 
                 class="auth-form__btn  app-btn app-btn--primary"
                 value="signup"

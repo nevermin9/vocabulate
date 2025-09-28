@@ -23,6 +23,7 @@ final class RegistrationController
             "password" => $password,
             "confirm_password" => $confirmPassword,
             "errors" => $errors,
+            "token" => AuthService::getCSRF();
         ]);
     }
 
@@ -39,6 +40,17 @@ final class RegistrationController
     {
 
         $req = Application::request();
+
+        $token = $req->data['_token'];
+
+        $isValidToken = AuthService::checkCSRF($token);
+
+        if (! $isValidToken) {
+            unset($_SESSION['csrf_token']);
+            session_regenerate_id(true);
+            redirect("/registration", 403);
+            die();
+        }
 
         [$newUser, $errors] = new UserService()->register($req->data['password'], $req->data['confirm_password'], $req->data['email']);
 

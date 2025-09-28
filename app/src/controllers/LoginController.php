@@ -33,6 +33,17 @@ final class LoginController
     {
         $req = Application::request();
 
+        $token = $req->data['_token'];
+
+        $isValidToken = AuthService::checkCSRF($token);
+
+        if (! $isValidToken) {
+            unset($_SESSION['csrf_token']);
+            session_regenerate_id(true);
+            redirect("/login", 403);
+            die();
+        }
+
         [$user, $errors] = new UserService()->verifyUser($req->data['password'], $req->data['email']);
 
         if ($user) {

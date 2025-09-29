@@ -18,15 +18,15 @@ final class Request
         $this->method = strtolower($_SERVER['REQUEST_METHOD']);
         $this->headers = static::getAllHeaders();
         $this->uri = $_SERVER['REQUEST_URI'];
-        $this->cookies = $_COOKIE;
+        $this->cookies = $this->sanitize($_COOKIE, INPUT_COOKIE);
 
         if ($this->method === "post" && isset($this->headers['Content-Type']) && $this->headers['Content-Type'] === 'application/json') {
             $json = file_get_contents('php://input');
             $this->data = (array) json_decode($json);
         } elseif ($this->method === "post") {
-            $this->data = $_POST;
+            $this->data = $this->sanitize($_POST, INPUT_POST);
         } else {
-            $this->data = $_GET;
+            $this->data = $this->sanitize($_GET, INPUT_GET);
         }
     }
 
@@ -51,4 +51,15 @@ final class Request
             $this->params = $params;
         }
     }
+
+    private function sanitize(array $data, int $type): array
+    {
+        $sanitized = [];
+        foreach ($data as $key => $value) {
+            $sanitized[] = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+        }
+        return $sanitized;
+    }
 }
+
+

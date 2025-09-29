@@ -1,6 +1,4 @@
 
-<?php require "_parts/head.php"; ?>
-
 <main class="auth-page">
     <h1 class="">
         Vocabulate
@@ -30,6 +28,7 @@
                     value="<?php echo htmlspecialchars($this->params['email'])  ?>"
                     maxlength="100"
                     required
+                    placeholder="example@domain.com"
                 />
             </label>
 
@@ -162,4 +161,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<?php require  "_parts/footer.php"; ?>

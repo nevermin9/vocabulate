@@ -1,5 +1,3 @@
-<?php require "_parts/head.php"; ?>
-
 <main>
     <h1>
         Welcome to Vocabulate
@@ -105,5 +103,3 @@
     });
     </script>
 </main>
-
-<?php require  "_parts/footer.php"; ?>

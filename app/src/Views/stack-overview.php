@@ -1,6 +1,4 @@
 
-<?php require "_parts/head.php"; ?>
-
 <main>
     <h1>
         <a href="/">to main</a>
@@ -97,5 +95,3 @@ dialog.addEventListener("click", (e) => {
     }
 });
 </script>
-
-<?php require  "_parts/footer.php"; ?>

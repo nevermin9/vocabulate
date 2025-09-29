@@ -23,7 +23,7 @@ final class RegistrationController
             "password" => $password,
             "confirm_password" => $confirmPassword,
             "errors" => $errors,
-            "token" => AuthService::getCSRF();
+            "token" => AuthService::getCSRF(),
         ]);
     }
 

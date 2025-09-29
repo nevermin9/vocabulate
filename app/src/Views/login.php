@@ -1,6 +1,4 @@
 
-<?php require "_parts/head.php"; ?>
-
 <main class="auth-page">
     <h1 class="">
         Vocabulate
@@ -28,6 +26,7 @@
                     maxlength="100"
                     value="<?php echo htmlspecialchars($this->params['email'])  ?>"
                     required
+                    placeholder="example@domain.com"
                 />
 
                 <?php if (( $this->params['errors']['email'] ?? null ) !== null ): ?>
@@ -93,6 +92,13 @@
             >
                 sign up here.
             </a>
+
+            <a 
+                class="app-link"
+                href="/forgot-password"
+            >
+                Forgot password?
+            </a>
         </p>
     </div>
 
@@ -130,5 +136,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-
-<?php require  "_parts/footer.php"; ?>

@@ -6,7 +6,12 @@ namespace App\Core;
 
 final class View
 {
-    public function __construct(private string $view, private array $params = [])
+    private string $layout = 'main';
+
+    public function __construct(
+        private string $view,
+        private array $params = [],
+    )
     {
     }
 
@@ -17,23 +22,39 @@ final class View
 
     private function render(): string
     {
-        $templatePath = \VIEWS_DIR . "/" . $this->view . ".php";
 
-        if (!file_exists($templatePath)) {
-            throw new \Exception('implement error if view doesnt exist');
-        }
+        $view = $this->renderView();
+        $layout = $this->renderLayout();
 
+        return str_replace("{{content}}", $view, $layout);
+    }
+
+    private function renderLayout()
+    {
         ob_start();
 
-        include $templatePath;
+        require_once \LAYOUTS_DIR . "/" . $this->layout . ".php";
 
         return (string) ob_get_clean();
+    }
+
+    private function renderView()
+    {
+        ob_start();
+
+        require_once \VIEWS_DIR . "/" . $this->view . ".php"; 
+
+        return (string) ob_get_clean();
+    }
+
+    public function setLayout(string $layout): void
+    {
+        $this->layout = $layout;
     }
 
     public function __toString(): string
     {
         return $this->render();
     }
-
 }
 

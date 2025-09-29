@@ -4,6 +4,10 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.dev
     container_name: vocabulate-php
+    # depends_on:
+    #   - nginx
+    #   - db
+    #   - mailhog
     restart: always
     working_dir: /var/www
     volumes:
@@ -29,3 +33,10 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - 3306:3306
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: vocabulate-mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"

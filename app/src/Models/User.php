@@ -13,10 +13,12 @@ class User
     public readonly ?string $id;
     protected ?string $aiApiKey = null;
     protected ?string $createdAt = null;
+    protected int $verified = 0;
+    protected int $premium = 0;
 
     public function __construct(
         protected string $username,
-        protected string $email,
+        public readonly string $email,
         public readonly string $passwordHash,
     )
     {

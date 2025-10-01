@@ -5,10 +5,10 @@ namespace App\Traits;
 
 trait CSRFGuardTrait
 {
-    public function forbidAndExit(string $redirectPath)
+    public function forbidAndExit()
     {
         session_regenerate_id(true);
-        redirect($redirectPath, 403);
-        die();
+        http_response_code(403);
+        die("Your request could not be processed due to a security check. Please try submitting the form again.");
     }
 }

@@ -49,14 +49,28 @@ final class AuthController
         ]);
     }
 
+    public function forgotPasswordView(): View
+    {
+        if (AuthService::isAuthenticated()) {
+            redirect("/");
+        }
+
+        $forgotPassForm = $this->getAndClearFromSession('forgot-password-form');
+
+        return View::make("forgot-password", [
+            "token" => AuthService::getCSRF(),
+            "model" => $forgotPassForm?->getFormModel() ?? null,
+            "errors" => $forgotPassForm?->errors ?? null,
+        ]);
+    }
+
     public function login()
     {
         $req = Application::request();
         $token = $req->data['token'];
 
         if (! AuthService::checkCSRF($token)) {
-            AuthService::logout();
-            $this->forbidAndExit("/login");
+            $this->forbidAndExit();
         }
 
         $loginForm = new LoginForm();
@@ -85,8 +99,7 @@ final class AuthController
         $token = $req->data['token'];
 
         if (! AuthService::checkCSRF($token)) {
-            AuthService::logout();
-            $this->forbidAndExit("/login");
+            $this->forbidAndExit();
         }
 
         $regForm = new RegistrationForm();
@@ -105,6 +118,11 @@ final class AuthController
         $this->saveInSession('registration-form', $regForm);
         redirect("/registration");
         die();
+    }
+
+    public function forgotPassword()
+    {
+
     }
 
     public function logout()

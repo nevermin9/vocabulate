@@ -56,7 +56,7 @@ final class Request
     {
         $sanitized = [];
         foreach ($data as $key => $value) {
-            $sanitized[] = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+            $sanitized[$key] = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);
         }
         return $sanitized;
     }

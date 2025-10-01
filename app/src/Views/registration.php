@@ -14,7 +14,7 @@
         <form
             class="auth-form"
             method="POST"
-            action="/register"
+            action="/registration"
         >
             <label class="auth-form__field  app-field">
                 <span class="app-field__label">
@@ -22,14 +22,20 @@
                 </span>
 
                 <input 
-                    class="app-field__input"
+                    class="app-field__input <?php echo ( $this->params['errors']['email'] ?? null ? 'app-field__input--invalid' : '' ) ?>"
                     type="email"
                     name="email"
-                    value="<?php echo htmlspecialchars($this->params['email'])  ?>"
+                    value="<?php echo htmlspecialchars($this->params['model']['email'] ?? '')  ?>"
                     maxlength="100"
                     required
                     placeholder="example@domain.com"
                 />
+
+                <?php if (( $this->params['errors']['email'] ?? null ) !== null ): ?>
+                <span class="app-field__error-txt">
+                    <?php echo htmlspecialchars($this->params['errors']['email'][0]); ?>
+                </span>
+                <?php endif; ?>
             </label>
 
             <label class="auth-form__field  app-field">
@@ -43,15 +49,15 @@
                     name="password"
                     minlength="8"
                     maxlength="50"
-                    value="<?php echo htmlspecialchars($this->params['password'])  ?>"
+                    value="<?php echo htmlspecialchars($this->params['model']['password'] ?? '')  ?>"
                     required
                     pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" 
                     title="Password must contain: at least one lowercase letter, one uppercase letter, one number, one special character, and be at least 8 characters long."
                 />
 
                 <ul class="auth-form__field-rules">
-                    <?php foreach ($this->params['password_rules'] as $ruleId => $rule): ?>
-                    <?php if (array_key_exists($ruleId, $this->params['errors']['password'] ?? [])): ?>
+                    <?php foreach ($this->params['password_rules'] as $rule): ?>
+                    <?php if (in_array($rule, $this->params['errors']['password'] ?? [])): ?>
                     <li class="auth-form__field-rule  auth-form__field-rule--invalid">
                     <?php else: ?>
                     <li class="auth-form__field-rule">
@@ -70,16 +76,21 @@
                 </span>
 
                 <input 
-                    class="app-field__input"
+                    class="app-field__input <?php echo ( $this->params['errors']['email'] ?? null ? 'app-field__input--invalid' : '' ) ?>"
                     type="password"
-                    name="confirm_password"
-                    value="<?php echo htmlspecialchars($this->params['confirm_password'])  ?>"
+                    name="confirmPassword"
+                    value="<?php echo htmlspecialchars($this->params['model']['confirmPassword'] ?? '')  ?>"
                     minlength="8"
                     maxlength="50"
                     required
                     pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" 
                     title="Password must contain: at least one lowercase letter, one uppercase letter, one number, one special character, and be at least 8 characters long."
                 />
+                <?php if (( $this->params['errors']['confirmPassword'] ?? null ) !== null ): ?>
+                <span class="app-field__error-txt">
+                    <?php echo htmlspecialchars($this->params['errors']['confirmPassword'][0]); ?>
+                </span>
+                <?php endif; ?>
             </label>
 
             <label class="app-checkbox">
@@ -102,7 +113,7 @@
                 <span class="app-checkbox__label">Show password </span>
             </label>
 
-            <input type="hidden" name="_token" value="<?php echo $this->params['token'] ?>" />
+            <input type="hidden" name="token" value="<?php echo $this->params['token'] ?>" />
 
             <button 
                 class="auth-form__btn  app-btn app-btn--primary"
@@ -132,7 +143,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     // show/hide password
-    const passwordInputs = Array.from(document.querySelectorAll("input[name*='password']"));
+    const passwordInputs = Array.from(document.querySelectorAll("input[type='password']"));
     const showPassInput = document.getElementById("show-pass-checkbox");
     const changeTypePassInputs = (type) => {
         for (const input of passwordInputs) {

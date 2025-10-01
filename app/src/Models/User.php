@@ -22,7 +22,7 @@ class User
     {
     }
 
-    public function create(): User
+    public function save(): User
     {
         $db = Application::db();
         $id = $this->generateIdBytes();

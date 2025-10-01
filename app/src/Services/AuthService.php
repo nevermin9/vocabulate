@@ -58,6 +58,11 @@ final class AuthService
         return hash_equals($_SESSION['csrf_token'], $userToken);
     }
 
+    public static function unsetCSRF()
+    {
+        unset($_SESSION['csrf_token']);
+    }
+
     private static function generateCSRF(bool $isForce = false): void
     {
         static::ensureSession();

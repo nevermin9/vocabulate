@@ -23,7 +23,7 @@ final class FlashcardService
             'translation' => $translation,
             'example-usage' => $exampleUsage,
             'example-usage-translation' => $exampleUsageTranslation
-        ])->create();
+        ])->save();
 
         return $flashcard;
     }

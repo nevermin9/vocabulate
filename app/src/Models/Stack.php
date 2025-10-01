@@ -19,7 +19,7 @@ class Stack
     {
     }
 
-    public function create(): Stack
+    public function save(): Stack
     {
         $db = Application::db();
 

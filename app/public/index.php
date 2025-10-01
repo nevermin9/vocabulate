@@ -5,15 +5,13 @@ require __DIR__ . "/../vendor/autoload.php";
 
 require_once __DIR__ . "/../src/helpers/init.php";
 
+use App\Controllers\AuthController;
 use App\Controllers\ForgotPasswordController;
 use Dotenv\Dotenv;
 use App\Core\Application;
 use App\Core\Config;
-use App\Core\Request;
 use App\Core\Router;
 use App\Controllers\HomeController;
-use App\Controllers\LoginController;
-use App\Controllers\RegistrationController;
 use App\Controllers\StackOverviewController;
 
 define('VIEWS_DIR', dirname(__DIR__) . "/src/Views");
@@ -45,15 +43,16 @@ $router = new Router();
 
 $router
     ->get("/", [HomeController::class, "index"])
-    ->get("/registration", [RegistrationController::class, "index"])
-    ->post("/register", [RegistrationController::class, "register"])
-    ->get("/login", [LoginController::class, "index"])
-    ->post("/login", [LoginController::class, "login"])
+    ->get("/registration", [AuthController::class, "registrationView"])
+    ->post("/registration", [AuthController::class, "register"])
+    ->get("/login", [AuthController::class, "loginView"])
+    ->post("/login", [AuthController::class, "login"])
     ->get("/stack/:id", [StackOverviewController::class, "index"])
-    ->get("/logout", [LoginController::class, "logout"])
+    ->get("/logout", [AuthController::class, "logout"])
     ->post("/stack/create", [HomeController::class, "createStack"])
     ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"])
     ->get("/forgot-password", [ForgotPasswordController::class, "index"])
+    ->get("/forgot-password/sent", "forgot-password-sent")
 ;
 
 

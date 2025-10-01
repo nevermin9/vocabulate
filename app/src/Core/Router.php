@@ -7,42 +7,42 @@ final class Router
 {
     private array $routingMap = [];
 
-    public function get(string $route, callable|array $action): static
+    public function get(string $route, callable|array|string $action): static
     {
         return $this->register('get', $route, $action);
     }
 
-    public function post(string $route, callable|array $action): static
+    public function post(string $route, callable|array|string $action): static
     {
         return $this->register('post', $route, $action);
     }
 
-    public function put(string $route, callable|array $action): static
+    public function put(string $route, callable|array|string $action): static
     {
         return $this->register('put', $route, $action);
     }
 
-    public function patch(string $route, callable|array $action): static
+    public function patch(string $route, callable|array|string $action): static
     {
         return $this->register('patch', $route, $action);
     }
 
-    public function delete(string $route, callable|array $action): static
+    public function delete(string $route, callable|array|string $action): static
     {
         return $this->register('delete', $route, $action);
     }
 
-    public function options(string $route, callable|array $action): static
+    public function options(string $route, callable|array|string $action): static
     {
         return $this->register('options', $route, $action);
     }
 
-    public function head(string $route, callable|array $action): static
+    public function head(string $route, callable|array|string $action): static
     {
         return $this->register('head', $route, $action);
     }
 
-    private function register(string $httpMethod, string $route, callable|array $action): static
+    private function register(string $httpMethod, string $route, callable|array|string $action): static
     {
         $this->routingMap[$httpMethod][$route] = $action;
 
@@ -66,8 +66,12 @@ final class Router
                     $paramAssoc[$name] = $matches[$i] ?? null;
                 }
 
+                if (is_string($action)) {
+                    return View::make($action, $paramAssoc);
+                }
+
                 if (is_callable($action)) {
-                    return call_user_func($action);
+                    return call_user_func_array($action, $paramAssoc);
                 }
 
                 if (is_array($action)) {
@@ -84,8 +88,6 @@ final class Router
             }
 
         }
-
-
 
 
         throw new \Exception("Implement route not found exception");

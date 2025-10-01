@@ -9,7 +9,7 @@ final class StackService
 {
     public function createStack(string $userId, string $name, string $langCode): Stack
     {
-        $stack = new Stack($userId, $name, $langCode)->create();
+        $stack = new Stack($userId, $name, $langCode)->save();
 
         return $stack;
     }

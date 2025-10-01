@@ -26,7 +26,7 @@ final class Flashcard
         $this->userId = $data['user-id'];
     }
 
-    public function create(): ?Flashcard
+    public function save(): ?Flashcard
     {
         $db = Application::db();
 

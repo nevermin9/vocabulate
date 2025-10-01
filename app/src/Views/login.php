@@ -1,3 +1,12 @@
+<?php 
+$email_errors_present = !empty($this->params['errors']['email'] ?? []);
+$credentials_errors_present = !empty($this->params['errors']['credentials'] ?? []);
+$is_email_input_invalid = $email_errors_present || $credentials_errors_present;
+
+$error_message_to_display = $email_errors_present 
+? ($this->params['errors']['email'][0] ?? null) 
+: ($credentials_errors_present ? ($this->params['errors']['credentials'][0] ?? null) : null);
+?>
 
 <main class="auth-page">
     <h1 class="">
@@ -20,19 +29,18 @@
                 </span>
 
                 <input 
-                    class="app-field__input  <?php echo ( $this->params['errors']['email'] ?? null ? 'app-field__input--invalid' : '' ) ?>"
+                    class="app-field__input  <?php echo ( $is_email_input_invalid ? 'app-field__input--invalid' : '' ) ?>"
                     type="email"
                     name="email"
                     maxlength="100"
-                    value="<?php echo htmlspecialchars($this->params['email'])  ?>"
+                    value="<?php echo htmlspecialchars($this->params['model']['email'] ?? '')  ?>"
                     required
                     placeholder="example@domain.com"
                 />
-
-                <?php if (( $this->params['errors']['email'] ?? null ) !== null ): ?>
-                <span class="app-field__error-txt">
-                    <?php echo htmlspecialchars($this->params['errors']['email']); ?>
-                </span>
+                <?php if ($error_message_to_display !== null ): ?>
+                    <span class="app-field__error-txt">
+                    <?php echo htmlspecialchars($error_message_to_display) ?>
+                    </span>
                 <?php endif; ?>
             </label>
 
@@ -42,11 +50,11 @@
                 </span>
 
                 <input 
-                    class="app-field__input  <?php echo ( ($this->params['errors']['email'] ?? null ) !== null ? 'app-field__input--invalid' : '' ) ?>"
+                    class="app-field__input  <?php echo ( ($this->params['errors']['credentials'] ?? null ) !== null ? 'app-field__input--invalid' : '' ) ?>"
                     id="password-input"
                     type="password"
                     name="password"
-                    value="<?php echo htmlspecialchars($this->params['password'])  ?>"
+                    value="<?php echo htmlspecialchars($this->params['model']['password'] ?? '')  ?>"
                     maxlength="50"
                     required
                 />
@@ -72,7 +80,7 @@
                 <span class="app-checkbox__label">Show password </span>
             </label>
 
-            <input type="hidden" name="_token" value="<?php echo $this->params['token'] ?>" />
+            <input type="hidden" name="token" value="<?php echo $this->params['token'] ?>" />
 
             <button
                 class="auth-form__btn  app-btn app-btn--primary"

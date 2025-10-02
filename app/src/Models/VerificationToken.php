@@ -5,8 +5,14 @@ namespace App\Models;
 
 class VerificationToken extends AbstractToken {
 
+    protected static function getTableName(): string
+    {
+        return 'verification_tokens';
+    }
+
     public function __construct(string $userId)
     {
-        parent::__construct($userId, 'verification_tokens');
+        parent::__construct($userId);
     }
+    
 }

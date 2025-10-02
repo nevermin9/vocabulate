@@ -63,12 +63,6 @@ abstract class AbstractForm
 
                 if ($ruleName === Rule::Required && ($value === null || $value === '')) {
                     $this->addErrorByRule($key, Rule::Required);
-                    // Skip remaining checks for this field if it's required and missing
-                    continue 2;
-                }
-
-                if ($value === null || $value === '') {
-                    continue; 
                 }
 
                 if ($ruleName === Rule::Email && !filter_var($value, FILTER_VALIDATE_EMAIL)) {

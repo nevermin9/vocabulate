@@ -22,25 +22,6 @@ $dotenv->load();
 
 $router = new Router();
 
-// class TestMail
-// {
-//     public function index()
-//     {
-//         return View::make("test-mail");
-//     }
-//
-//     public function handle()
-//     {
-//         $mail = new MailService();
-//         $mail->setRecipients(
-//             ['address' => 'fooo@gmail.com', 'name' => 'Your Daddy'],
-//             ['address' => $_POST['address'], $_POST['name']]
-//         );
-//         $mail->fillHTML('Subject', 'Click <a href="google.com">here</a>;');
-//         $mail->send();
-//     }
-// }
-
 $router
     ->get("/", [HomeController::class, "index"])
     ->get("/registration", [AuthController::class, "registrationView"])
@@ -51,8 +32,9 @@ $router
     ->get("/logout", [AuthController::class, "logout"])
     ->post("/stack/create", [HomeController::class, "createStack"])
     ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"])
-    ->get("/forgot-password", [ForgotPasswordController::class, "index"])
-    ->get("/forgot-password/sent", "forgot-password-sent")
+    ->get("/forgot-password", [AuthController::class, "forgotPasswordView"])
+    ->post("/forgot-password", [AuthController::class, "forgotPassword"])
+    ->get("/forgot-password/status", "forgot-password-sent")
 ;
 
 

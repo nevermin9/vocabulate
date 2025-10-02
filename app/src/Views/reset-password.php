@@ -8,39 +8,17 @@
         class="auth-page__auth-box auth-box"
     >
         <h3 class="auth-page__title">
-            Sign Up
+            Reset password
         </h3>
 
         <form
             class="auth-form"
             method="POST"
-            action="/registration"
+            action="/reset-password"
         >
             <label class="auth-form__field  app-field">
                 <span class="app-field__label">
-                    Email*
-                </span>
-
-                <input 
-                    class="app-field__input <?php echo ( $this->params['errors']['email'] ?? null ? 'app-field__input--invalid' : '' ) ?>"
-                    type="email"
-                    name="email"
-                    value="<?php echo htmlspecialchars($this->params['model']['email'] ?? '')  ?>"
-                    maxlength="100"
-                    required
-                    placeholder="example@domain.com"
-                />
-
-                <?php if (( $this->params['errors']['email'] ?? null ) !== null ): ?>
-                <span class="app-field__error-txt">
-                    <?php echo htmlspecialchars($this->params['errors']['email'][0]); ?>
-                </span>
-                <?php endif; ?>
-            </label>
-
-            <label class="auth-form__field  app-field">
-                <span class="app-field__label">
-                    Password*
+                    New Password*
                 </span>
 
                 <input 
@@ -72,7 +50,7 @@
 
             <label class="auth-form__field  app-field">
                 <span class="app-field__label">
-                    Confirm password*
+                    Confirm new password*
                 </span>
 
                 <input 
@@ -113,26 +91,17 @@
                 <span class="app-checkbox__label">Show password </span>
             </label>
 
+            <input type="hidden" name="reset_pass_token" value="<?php echo $this->params['token'] ?>" />
+
             <input type="hidden" name="csrf_token" value="<?php echo $this->params['csrf_token'] ?>" />
 
             <button 
                 class="auth-form__btn  app-btn app-btn--primary"
                 value="signup"
             >
-                Sign Up
+                Change password
             </button>
         </form>
-
-        <p class="auth-page__sub-txt">
-            Already have an account?
-
-            <a 
-                class="app-link"
-                href="/login"
-            >
-                Log in here.
-            </a>
-        </p>
     </div>
 
     <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">

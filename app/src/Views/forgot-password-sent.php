@@ -1,11 +1,30 @@
-<main>
-    <p>
-        We just sent a password reset link. Please check your inbox (and spam folder!) to continue.
-    </p>
+<main class="auth-status-page">
+    <div class="auth-status-page__box">
+        <div class="auth-status-page__icon-box">
+            <svg class="auth-status-page__icon icon">
+                <use href="#mail" />
+            </svg>
+        </div>
 
-    <p>
-        The link will expire in 1 hour for security reasons.
-    </p>
+        <h1 class="auth-status-page__title">
+            Check Your Inbox
+        </h1>
+
+        <p class="auth-status-page__text">
+            We've sent a **password reset link** to the email address associated with your account.
+        </p>
+
+        <p class="auth-status-page__sub-text">
+            <b>Didn't receive the email?</b> <br>
+            Please check your spam or junk folder. The link will expire shortly.
+        </p>
+
+        <a href="/login" 
+            class="auth-status-page__text app-link"
+        >
+            Back to Login Page
+        </a>
+    </div>
 
     <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
         <?php require "_parts/theme-switcher.php"; ?>

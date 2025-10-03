@@ -1,0 +1,68 @@
+.auth-status-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 32px;
+
+    .auth-status-page__box {
+        max-width: 28rem;
+        width: 100%;
+        margin: auto;
+        text-align: center;
+    }
+
+    .auth-status-page__icon-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 1.5rem auto;
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+        background-color: var(--app-light-blue);
+        color: var(--app-blue);
+
+        &.auth-status-page__icon-box--invalid {
+            background-color: var(--app-light-red);
+            color: var(--app-red);
+        }
+
+        &.auth-status-page__icon-box--success {
+            background-color: var(--app-light-green);
+            color: var(--app-green);
+        }
+    }
+
+    .auth-status-page__icon {
+        --size: 2rem;
+    }
+
+    .auth-status-page__title,
+    .auth-status-page__sub-title {
+        margin: 0;
+        margin-bottom: 1rem;
+    }
+
+    .auth-status-page__title {
+        font-size: 1.875rem;
+    }
+
+    .auth-status-page__sub-title {
+        font-size: 1.25rem;
+    }
+
+    .auth-status-page__text, 
+    .auth-status-page__ordered-list {
+        font-size: 0.875rem;
+    }
+
+    .auth-status-page__ordered-list {
+        text-align: left;
+    }
+
+    .auth-status-page__sub-text {
+        font-size: 0.875rem;
+        color: light-dark(var(--app-stone), var(--app-light-gray));
+    }
+}

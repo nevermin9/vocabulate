@@ -15,3 +15,5 @@ require "stack.css";
 require "create-stack-form.css";
 require "flashcard-form.css";
 require "pages/auth-page.css";
+require "pages/auth-status-page.css";
+

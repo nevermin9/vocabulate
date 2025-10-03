@@ -1,28 +1,26 @@
 
-<main>
-    <!-- Success Card Container -->
-    <div class="w-full max-w-md bg-white shadow-xl rounded-xl p-8 sm:p-10 text-center transition-all duration-300">
-        <!-- Success Icon (Lucide check circle equivalent using inline SVG) -->
-        <div class="mx-auto w-16 h-16 flex items-center justify-center bg-green-100 rounded-full mb-6">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+<main class="auth-status-page">
+    <div class="auth-status-page__box">
+        <div class="auth-status-page__icon-box auth-status-page__icon-box--success">
+            <svg class="auth-status-page__icon icon">
+                <use href="#check" />
             </svg>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-gray-900 mb-3">
+        <h1 class="auth-status-page__title">
             Success!
         </h1>
 
-        <p class="text-lg text-gray-600 mb-8">
+        <p class="auth-status-page__text">
             Your password has been successfully reset.
         </p>
 
-        <p class="text-gray-700 mb-8">
+        <p class="auth-status-page__text">
             You can now use your **new password** to log in.
         </p>
 
         <a href="/login" 
-            class="app-link"
+            class="app-link auth-status-page__text"
         >
             Go to Login
         </a>

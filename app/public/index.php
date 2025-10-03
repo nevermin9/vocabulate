@@ -13,6 +13,8 @@ use App\Core\Config;
 use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\StackOverviewController;
+use App\Middleware\AuthMiddleware;
+use App\Middleware\GuestMiddleware;
 
 define('VIEWS_DIR', dirname(__DIR__) . "/src/Views");
 define('LAYOUTS_DIR', dirname(__DIR__) . "/src/Views/_layouts");
@@ -23,22 +25,25 @@ $dotenv->load();
 $router = new Router();
 
 $router
-    ->get("/", [HomeController::class, "index"])
-    ->get("/registration", [AuthController::class, "registrationView"])
-    ->post("/registration", [AuthController::class, "register"])
-    ->get("/login", [AuthController::class, "loginView"])
-    ->post("/login", [AuthController::class, "login"])
-    ->get("/stack/:id", [StackOverviewController::class, "index"])
-    ->get("/logout", [AuthController::class, "logout"])
-    ->post("/stack/create", [HomeController::class, "createStack"])
-    ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"])
-    ->get("/forgot-password", [AuthController::class, "forgotPasswordView"])
-    ->post("/forgot-password", [AuthController::class, "forgotPassword"])
-    ->get("/reset-password", [AuthController::class, "resetPasswordView"])
-    ->post("/reset-password", [AuthController::class, "resetPassword"])
-    ->get("/forgot-password/status", [AuthController::class, "forgotPasswordSentView"])
-    ->get("/reset-password/invalid", [AuthController::class, "resetPasswordInvalidView"])
-    ->get("/reset-password/success", [AuthController::class, "resetPasswordSuccessView"])
+    // user's routes
+    ->get("/", [HomeController::class, "index"], [AuthMiddleware::class])
+    ->get("/stack/:id", [StackOverviewController::class, "index"], [AuthMiddleware::class])
+    ->get("/logout", [AuthController::class, "logout"], [AuthMiddleware::class])
+    ->post("/stack/create", [HomeController::class, "createStack"], [AuthMiddleware::class])
+    ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"], [AuthMiddleware::class])
+
+    // anonymous's routes
+    ->get("/registration", [AuthController::class, "registrationView"], [GuestMiddleware::class])
+    ->post("/registration", [AuthController::class, "register"], [GuestMiddleware::class])
+    ->get("/login", [AuthController::class, "loginView"], [GuestMiddleware::class])
+    ->post("/login", [AuthController::class, "login"], [GuestMiddleware::class])
+    ->get("/forgot-password", [AuthController::class, "forgotPasswordView"], [GuestMiddleware::class])
+    ->post("/forgot-password", [AuthController::class, "forgotPassword"], [GuestMiddleware::class])
+    ->get("/reset-password", [AuthController::class, "resetPasswordView"], [GuestMiddleware::class])
+    ->post("/reset-password", [AuthController::class, "resetPassword"], [GuestMiddleware::class])
+    ->get("/forgot-password/status", [AuthController::class, "forgotPasswordSentView"], [GuestMiddleware::class])
+    ->get("/reset-password/invalid", [AuthController::class, "resetPasswordInvalidView"], [GuestMiddleware::class])
+    ->get("/reset-password/success", [AuthController::class, "resetPasswordSuccessView"], [GuestMiddleware::class])
 ;
 
 

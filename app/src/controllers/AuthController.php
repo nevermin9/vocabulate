@@ -28,10 +28,6 @@ final class AuthController extends AbstractController
 
     public function loginView(): View
     {
-        if (AuthService::isAuthenticated()) {
-            redirect("/");
-        }
-
         $loginForm = $this->getAndClearFromSession('login-form');
 
         return $this->renderView("login", [
@@ -43,10 +39,6 @@ final class AuthController extends AbstractController
 
     public function registrationView(): View
     {
-        if (AuthService::isAuthenticated()) {
-            redirect("/");
-        }
-
         $regForm = $this->getAndClearFromSession('registration-form');
 
         return $this->renderView("registration", [
@@ -59,10 +51,6 @@ final class AuthController extends AbstractController
 
     public function forgotPasswordView(): View
     {
-        if (AuthService::isAuthenticated()) {
-            redirect("/");
-        }
-
         $forgotPassForm = $this->getAndClearFromSession('forgot-password-form');
 
         return $this->renderView("forgot-password", [
@@ -74,10 +62,6 @@ final class AuthController extends AbstractController
 
     public function resetPasswordView(): View
     {
-        if (AuthService::isAuthenticated()) {
-            redirect("/");
-        }
-
         $resetPasswordForm = $this->getAndClearFromSession("reset-password-form");
         $req = Application::request();
 
@@ -131,7 +115,7 @@ final class AuthController extends AbstractController
         if ($isValid) {
             $user = User::getByEmail($loginForm->email);
 
-            if ($loginForm->validateUser($user)) {
+            if ($loginForm->validateUserPassword($user)) {
                 AuthService::login($user->getId());
                 redirect("/");
                 die();

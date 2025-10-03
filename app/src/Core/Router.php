@@ -7,44 +7,55 @@ final class Router
 {
     private array $routingMap = [];
 
-    public function get(string $route, callable|array|string $action): static
+    public function get(string $route, callable|array|string $action, string|array $middleware = []): static
     {
-        return $this->register('get', $route, $action);
+        return $this->register('get', $route, $action, $middleware);
     }
 
-    public function post(string $route, callable|array|string $action): static
+    public function post(string $route, callable|array|string $action, string|array $middleware = []): static
     {
-        return $this->register('post', $route, $action);
+        return $this->register('post', $route, $action, $middleware);
     }
 
-    public function put(string $route, callable|array|string $action): static
+    public function put(string $route, callable|array|string $action, string|array $middleware = []): static
     {
-        return $this->register('put', $route, $action);
+        return $this->register('put', $route, $action, $middleware);
     }
 
-    public function patch(string $route, callable|array|string $action): static
+    public function patch(string $route, callable|array|string $action, string|array $middleware = []): static
     {
-        return $this->register('patch', $route, $action);
+        return $this->register('patch', $route, $action, $middleware);
     }
 
-    public function delete(string $route, callable|array|string $action): static
+    public function delete(string $route, callable|array|string $action, string|array $middleware = []): static
     {
-        return $this->register('delete', $route, $action);
+        return $this->register('delete', $route, $action, $middleware);
     }
 
-    public function options(string $route, callable|array|string $action): static
+    public function options(string $route, callable|array|string $action, string|array $middleware = []): static
     {
-        return $this->register('options', $route, $action);
+        return $this->register('options', $route, $action, $middleware);
     }
 
-    public function head(string $route, callable|array|string $action): static
+    public function head(string $route, callable|array|string $action, string|array $middleware = []): static
     {
-        return $this->register('head', $route, $action);
+        return $this->register('head', $route, $action, $middleware);
     }
 
-    private function register(string $httpMethod, string $route, callable|array|string $action): static
+    /**
+     * @param string $route
+     * @param callable|array|string $action
+     * @param string|array $middleware Optional middleware (or array of middleware) to run
+     * @return static
+     */
+    private function register(string $httpMethod, string $route, callable|array|string $action, string|array $middleware): static
     {
-        $this->routingMap[$httpMethod][$route] = $action;
+        $middleware = (array) $middleware;
+
+        $this->routingMap[$httpMethod][$route] = [
+            'action' => $action,
+            'middleware' => $middleware,
+        ];
 
         return $this;
     }
@@ -53,7 +64,7 @@ final class Router
     {
         $route = explode("?", $requestUri)[0];
 
-        foreach ($this->routingMap[$requestMethod] ?? [] as $pattern => $action) {
+        foreach ($this->routingMap[$requestMethod] ?? [] as $pattern => $routeData) {
             $regex = preg_replace('#:([\w]+)#', '([^/]+)', $pattern);
             $regex = "#^" . $regex . "$#";
 
@@ -66,8 +77,18 @@ final class Router
                     $paramAssoc[$name] = $matches[$i] ?? null;
                 }
 
-                if (is_string($action)) {
-                    return View::make($action, $paramAssoc);
+                $action = $routeData['action'];
+                $middleware = $routeData['middleware'];
+
+                foreach ($middleware as $middlewareClass) {
+                    if (class_exists($middlewareClass)) {
+                        $middlewareObj = new $middlewareClass();
+                        $response = $middlewareObj->handle(); 
+
+                        if ($response !== null) {
+                            return $response; 
+                        }
+                    }
                 }
 
                 if (is_callable($action)) {
@@ -86,9 +107,7 @@ final class Router
                     }
                 }
             }
-
         }
-
 
         throw new \Exception("Implement route not found exception");
     }

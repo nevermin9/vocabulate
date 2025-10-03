@@ -8,7 +8,7 @@ $error_message_to_display = $email_errors_present
 : ($credentials_errors_present ? ($this->params['errors']['credentials'][0] ?? null) : null);
 ?>
 
-<main class="auth-page">
+<div class="auth-page">
     <h1 class="">
         Vocabulate
     </h1>
@@ -110,10 +110,7 @@ $error_message_to_display = $email_errors_present
         </p>
     </div>
 
-    <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
-        <?php require "_parts/theme-switcher.php"; ?>
-    </aside>
-</main>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

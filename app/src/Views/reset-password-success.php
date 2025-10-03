@@ -1,5 +1,5 @@
 
-<main class="auth-status-page">
+<div class="auth-status-page">
     <div class="auth-status-page__box">
         <div class="auth-status-page__icon-box auth-status-page__icon-box--success">
             <svg class="auth-status-page__icon icon">
@@ -25,8 +25,4 @@
             Go to Login
         </a>
     </div>
-
-    <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
-        <?php require "_parts/theme-switcher.php"; ?>
-    </aside>
-</main>
+</div>

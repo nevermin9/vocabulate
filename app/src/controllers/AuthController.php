@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\AbstractController;
 use App\Core\Application;
 use App\Core\View;
 use App\Forms\ForgotPasswordForm;
@@ -15,10 +16,15 @@ use App\Services\UserService;
 use App\Traits\CSRFGuardTrait;
 use App\Traits\SessionStoreTrait;
 
-final class AuthController
+final class AuthController extends AbstractController
 {
     use SessionStoreTrait;
     use CSRFGuardTrait;
+
+    public function __construct()
+    {
+        $this->setLayout('guest-view');
+    }
 
     public function loginView(): View
     {
@@ -28,7 +34,7 @@ final class AuthController
 
         $loginForm = $this->getAndClearFromSession('login-form');
 
-        return View::make("login", [
+        return $this->renderView("login", [
             "csrf_token" => AuthService::getCSRF(),
             "model" => $loginForm?->getFormModel() ?? null,
             "errors" => $loginForm?->errors ?? null,
@@ -43,7 +49,7 @@ final class AuthController
 
         $regForm = $this->getAndClearFromSession('registration-form');
 
-        return View::make("registration", [
+        return $this->renderView("registration", [
             "csrf_token" => AuthService::getCSRF(),
             "password_rules" => new RegistrationForm()->getPasswordMessages(),
             "model" => $regForm?->getFormModel() ?? null,
@@ -59,7 +65,7 @@ final class AuthController
 
         $forgotPassForm = $this->getAndClearFromSession('forgot-password-form');
 
-        return View::make("forgot-password", [
+        return $this->renderView("forgot-password", [
             "csrf_token" => AuthService::getCSRF(),
             "model" => $forgotPassForm?->getFormModel() ?? null,
             "errors" => $forgotPassForm?->errors ?? null,
@@ -84,7 +90,7 @@ final class AuthController
             }
         }
 
-        return View::make("reset-password", [
+        return $this->renderView("reset-password", [
             "csrf_token" => AuthService::getCSRF(),
             "model" => $resetPasswordForm?->getFormModel() ?? null,
             "errors" => $resetPasswordForm?->errors ?? null,
@@ -93,6 +99,20 @@ final class AuthController
         ]);
     }
 
+    public function forgotPasswordSentView()
+    {
+        return $this->renderView("forgot-password-sent");
+    }
+
+    public function resetPasswordInvalidView()
+    {
+        return $this->renderView("reset-password-invalid");
+    }
+
+    public function resetPasswordSuccessView()
+    {
+        return $this->renderView("reset-password-success");
+    }
 
     public function login()
     {

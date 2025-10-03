@@ -1,4 +1,4 @@
-<main class="auth-page">
+<div class="auth-page">
     <h1>
         Vocabulate
     </h1>
@@ -53,8 +53,4 @@
             </a>
         </p>
     </div>
-
-    <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
-        <?php require "_parts/theme-switcher.php"; ?>
-    </aside>
-</main>
+</div>

@@ -1,7 +1,7 @@
 .auth-page {
     display: flex;
     flex-direction: column;
-    padding: 32px;
+    height: 100%;
 
     .auth-page__title {
         margin: 0

@@ -16,14 +16,13 @@
     </head>
 
     <body>
-        <?php require dirname(__DIR__) . "/_parts/app-overlay.php"; ?>
+        <main class="guest-view">
+            {{content}}
 
-        <header>
-            <div>
-            </div>
-        </header>
-
-        {{content}}
+            <aside class="guest-view__theme-switcher  theme-switcher-box  theme-switcher-box--center">
+                <?php require dirname(__DIR__) . "/_parts/theme-switcher.php"; ?>
+            </aside>
+        </main>
 
         <?php require dirname(__DIR__) . "/_parts/svg-sprite.html"; ?>
     </body>

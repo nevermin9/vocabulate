@@ -34,11 +34,11 @@ $router
     ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"])
     ->get("/forgot-password", [AuthController::class, "forgotPasswordView"])
     ->post("/forgot-password", [AuthController::class, "forgotPassword"])
-    ->get("/forgot-password/status", "forgot-password-sent")
     ->get("/reset-password", [AuthController::class, "resetPasswordView"])
     ->post("/reset-password", [AuthController::class, "resetPassword"])
-    ->get("/reset-password/invalid", "reset-password-invalid")
-    ->get("/reset-password/success", "reset-password-success")
+    ->get("/forgot-password/status", [AuthController::class, "forgotPasswordSentView"])
+    ->get("/reset-password/invalid", [AuthController::class, "resetPasswordInvalidView"])
+    ->get("/reset-password/success", [AuthController::class, "resetPasswordSuccessView"])
 ;
 
 

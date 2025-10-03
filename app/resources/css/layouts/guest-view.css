@@ -1,0 +1,9 @@
+.guest-view {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+
+    .guest-view__theme-switcher {
+        margin-top: auto;
+    }
+}

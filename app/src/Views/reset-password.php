@@ -1,5 +1,4 @@
-
-<main class="auth-page">
+<div class="auth-page">
     <h1 class="">
         Vocabulate
     </h1>
@@ -103,11 +102,7 @@
             </button>
         </form>
     </div>
-
-    <aside class="auth-page__theme-switcher  theme-switcher-box  theme-switcher-box--center">
-        <?php require "_parts/theme-switcher.php"; ?>
-    </aside>
-</main>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

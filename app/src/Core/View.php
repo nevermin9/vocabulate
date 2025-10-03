@@ -6,18 +6,18 @@ namespace App\Core;
 
 final class View
 {
-    private string $layout = 'main';
 
     public function __construct(
         private string $view,
         private array $params = [],
+        private string $layout = 'main',
     )
     {
     }
 
-    public static function make(string $view, array $params = []): static
+    public static function make(string $view, array $params = [], string $layout = 'main'): static
     {
-        return new static($view, $params);
+        return new static($view, $params, $layout);
     }
 
     private function render(): string

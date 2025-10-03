@@ -39,7 +39,7 @@ final class Application
     public function run(): void
     {
         try {
-            echo $this->router->resolve(static::$request->method, static::$request->uri);
+            echo $this->router->resolve(static::$request);
         } catch (\Throwable $e) {
             echo "error: ";
             echo $e->getFile() . $e->getLine() . "<br>" . $e->getTrace() . "<br>" . $e->getMessage();

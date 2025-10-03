@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\AbstractController;
-use App\Core\Application;
+use App\Core\Request;
 use App\Core\View;
 use App\Forms\ForgotPasswordForm;
 use App\Forms\LoginForm;
@@ -13,13 +13,11 @@ use App\Forms\ResetPasswordForm;
 use App\Models\User;
 use App\Services\AuthService;
 use App\Services\UserService;
-use App\Traits\CSRFGuardTrait;
 use App\Traits\SessionStoreTrait;
 
 final class AuthController extends AbstractController
 {
     use SessionStoreTrait;
-    use CSRFGuardTrait;
 
     public function __construct()
     {
@@ -60,10 +58,9 @@ final class AuthController extends AbstractController
         ]);
     }
 
-    public function resetPasswordView(): View
+    public function resetPasswordView(Request $req): View
     {
         $resetPasswordForm = $this->getAndClearFromSession("reset-password-form");
-        $req = Application::request();
 
         if (! $resetPasswordForm) {
             $userService = new UserService();
@@ -98,15 +95,8 @@ final class AuthController extends AbstractController
         return $this->renderView("reset-password-success");
     }
 
-    public function login()
+    public function login(Request $req)
     {
-        $req = Application::request();
-        $token = $req->data['csrf_token'];
-
-        if (! AuthService::checkCSRF($token)) {
-            $this->forbidAndExit();
-        }
-
         $loginForm = new LoginForm();
         $loginForm->load($req->data);
 
@@ -127,15 +117,8 @@ final class AuthController extends AbstractController
         die();
     }
 
-    public function register()
+    public function register(Request $req)
     {
-        $req = Application::request();
-        $token = $req->data['csrf_token'];
-
-        if (! AuthService::checkCSRF($token)) {
-            $this->forbidAndExit();
-        }
-
         $regForm = new RegistrationForm();
         $regForm->load($req->data);
 
@@ -154,15 +137,8 @@ final class AuthController extends AbstractController
         die();
     }
 
-    public function forgotPassword()
+    public function forgotPassword(Request $req)
     {
-        $req = Application::request();
-        $token = $req->data['csrf_token'];
-
-        if (! AuthService::checkCSRF($token)) {
-            $this->forbidAndExit();
-        }
-
         $forgotPassForm = new ForgotPasswordForm();
         $forgotPassForm->load($req->data);
         $isValid = $forgotPassForm->validate();
@@ -185,15 +161,8 @@ final class AuthController extends AbstractController
         die();
     }
 
-    public function resetPassword()
+    public function resetPassword(Request $req)
     {
-        $req = Application::request();
-        $token = $req->data['csrf_token'];
-
-        if (! AuthService::checkCSRF($token)) {
-            $this->forbidAndExit();
-        }
-
         $resetPassForm = new ResetPasswordForm();
         $resetPassForm->load($req->data);
         $isValid = $resetPassForm->validate();

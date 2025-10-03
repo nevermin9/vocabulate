@@ -6,7 +6,6 @@ require __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/../src/helpers/init.php";
 
 use App\Controllers\AuthController;
-use App\Controllers\ForgotPasswordController;
 use Dotenv\Dotenv;
 use App\Core\Application;
 use App\Core\Config;
@@ -14,6 +13,7 @@ use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\StackOverviewController;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\CSRFTokenMiddleware;
 use App\Middleware\GuestMiddleware;
 
 define('VIEWS_DIR', dirname(__DIR__) . "/src/Views");
@@ -25,6 +25,7 @@ $dotenv->load();
 $router = new Router();
 
 $router
+    ->registerGlobalMiddleware([CSRFTokenMiddleware::class])
     // user's routes
     ->get("/", [HomeController::class, "index"], [AuthMiddleware::class])
     ->get("/stack/:id", [StackOverviewController::class, "index"], [AuthMiddleware::class])

@@ -11,6 +11,7 @@ final class Request
     public readonly string $host; 
     public readonly array $headers;
     public readonly array $cookies;
+    public readonly string $path;
 
     public function __construct()
     {
@@ -19,6 +20,7 @@ final class Request
         $this->uri = $_SERVER['REQUEST_URI'];
         $this->cookies = $this->sanitize($_COOKIE, INPUT_COOKIE);
         $this->host = $_SERVER['HTTP_HOST'] ?? 'unknown';
+        $this->path = explode("?", $this->uri)[0];
 
         if ($this->method === "post" && isset($this->headers['Content-Type']) && $this->headers['Content-Type'] === 'application/json') {
             $json = file_get_contents('php://input');

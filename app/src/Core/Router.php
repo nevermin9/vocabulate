@@ -6,6 +6,7 @@ namespace App\Core;
 final class Router
 {
     private array $routingMap = [];
+    private array $globalMiddleware = [];
 
     public function get(string $route, callable|array|string $action, string|array $middleware = []): static
     {
@@ -42,6 +43,13 @@ final class Router
         return $this->register('head', $route, $action, $middleware);
     }
 
+    public function registerGlobalMiddleware(array $middleware): static
+    {
+        $this->globalMiddleware = $middleware;
+
+        return $this;
+    }
+
     /**
      * @param string $route
      * @param callable|array|string $action
@@ -60,9 +68,80 @@ final class Router
         return $this;
     }
 
-    public function resolve(string $requestMethod, string $requestUri)
+    private function runGlobalMiddleware(Request $req): mixed
     {
-        $route = explode("?", $requestUri)[0];
+        foreach ($this->globalMiddleware as $middlewareClass) {
+            if (class_exists($middlewareClass)) {
+                $middlewareObj = new $middlewareClass();
+                $response = $middlewareObj->handle($req); 
+
+                if ($response !== null) {
+                    return $response; 
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Uses Reflection to build the parameter array for a callable,
+     * injecting the Request object and route parameters.
+     * @param callable|array $callable The function or [class, method] array.
+     * @param array $routeParams The URL parameters (e.g., ['id' => '123']).
+     * @param \App\Core\Request $req The current Request object.
+     * @return array The associative array of parameters to pass to call_user_func_array.
+     * @throws \ReflectionException
+     */
+    private function getCallableParameters(callable|array $callable, array $routeParams, Request $req): array
+    {
+        if (is_array($callable)) {
+            [$class, $method] = $callable;
+            $reflector = new \ReflectionMethod($class, $method);
+        } else {
+            $reflector = new \ReflectionFunction($callable);
+        }
+
+        $paramAssoc = [];
+        $requestClass = Request::class;
+
+        foreach ($reflector->getParameters() as $parameter) {
+            $paramName = $parameter->getName();
+            $paramType = $parameter->getType();
+
+            if ($paramType instanceof \ReflectionNamedType && $paramType->getName() === $requestClass) {
+                $paramAssoc[$paramName] = $req;
+                continue;
+            }
+
+            if (array_key_exists($paramName, $routeParams)) {
+                $paramAssoc[$paramName] = $routeParams[$paramName];
+                continue;
+            }
+
+            if ($parameter->isOptional()) {
+                $paramAssoc[$paramName] = $parameter->getDefaultValue();
+                continue;
+            }
+
+            if (!$parameter->isOptional()) {
+                throw new \Exception("Missing required parameter '{$paramName}' for route action.");
+            }
+        }
+
+        return $paramAssoc;
+    }
+
+    public function resolve(Request $req)
+    {
+        $result = $this->runGlobalMiddleware($req);
+
+        if ($result) {
+            return $result;
+        }
+
+        $requestMethod = $req->method;
+        $route = $req->path;
 
         foreach ($this->routingMap[$requestMethod] ?? [] as $pattern => $routeData) {
             $regex = preg_replace('#:([\w]+)#', '([^/]+)', $pattern);
@@ -71,10 +150,10 @@ final class Router
             if (preg_match($regex, $route, $matches)) {
                 array_shift($matches);
                 preg_match_all('#:([\w]+)#', $pattern, $paramNames);
-                $paramAssoc = [];
 
+                $routeParams = [];
                 foreach ($paramNames[1] as $i => $name) {
-                    $paramAssoc[$name] = $matches[$i] ?? null;
+                    $routeParams[$name] = $matches[$i] ?? null;
                 }
 
                 $action = $routeData['action'];
@@ -83,13 +162,15 @@ final class Router
                 foreach ($middleware as $middlewareClass) {
                     if (class_exists($middlewareClass)) {
                         $middlewareObj = new $middlewareClass();
-                        $response = $middlewareObj->handle(); 
+                        $response = $middlewareObj->handle($req); 
 
                         if ($response !== null) {
                             return $response; 
                         }
                     }
                 }
+
+                $paramAssoc = $this->getCallableParameters($action, $routeParams, $req);
 
                 if (is_callable($action)) {
                     return call_user_func_array($action, $paramAssoc);

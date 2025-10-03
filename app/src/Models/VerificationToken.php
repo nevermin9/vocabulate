@@ -5,7 +5,7 @@ namespace App\Models;
 
 class VerificationToken extends AbstractToken {
 
-    protected static function getTableName(): string
+    public static function getTableName(): string
     {
         return 'verification_tokens';
     }

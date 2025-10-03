@@ -19,7 +19,7 @@ class User
 {
     use UUIDTrait;
 
-    private string $id;
+    private readonly string $id;
     private ?string $aiApiKey = null;
     private ?string $createdAt = null;
     private bool $isVerified = false; // Use boolean for logic
@@ -28,7 +28,7 @@ class User
     public function __construct(
         private string $username,
         private readonly string $email,
-        private readonly string $passwordHash,
+        private string $passwordHash,
     ) {
     }
 
@@ -46,7 +46,7 @@ class User
             $data['password_hash']
         );
 
-        $user->id = $data['id'];
+        $user->id = $user->convertBytesToString($data['id']);
         $user->aiApiKey = $data['ai_api_key'] ?? null;
         $user->createdAt = $data['created_at'] ?? null;
         $user->isVerified = (bool)($data['verified'] ?? 0);
@@ -55,12 +55,21 @@ class User
         return $user;
     }
 
-    // --- Accessors (Getters) ---
-    // Read-only properties should have explicit getters for professional encapsulation
+    public static function getColumns()
+    {
+        return ["id", "username", "email", "password_hash", "created_at", "verified", "premium", "ai_api_key"];
+    }
 
-    public function getId(): string
+    // --- Accessors (Getters) ---
+
+    public function getId(bool $asBin = false): string
     {
         return $this->id;
+    }
+
+    public function getDbId(): string 
+    {
+        return $this->convertStringToBytes($this->id);
     }
 
     public function getUsername(): string
@@ -98,8 +107,6 @@ class User
         return $this->isPremium;
     }
 
-    // --- Database Operations (Active Record) ---
-
     public static function getByEmail(string $email): ?User
     {
         $db = Application::db();
@@ -130,7 +137,8 @@ class User
     public function save(): static
     {
         $db = Application::db();
-        $this->id = $this->generateIdBytes();
+        $idBytes = $this->generateIdBytes();
+        $this->id = $this->convertBytesToString($idBytes);
 
         $stmt = $db->prepare(
             "INSERT INTO users (id, username, email, password_hash, created_at, verified, premium)
@@ -138,7 +146,7 @@ class User
         );
 
         $params = [
-            "id" => $this->id,
+            "id" => $idBytes,
             "username" => $this->username,
             "email" => $this->email,
             "password_hash" => $this->passwordHash,
@@ -153,8 +161,61 @@ class User
         }
 
         $stmt = $db->prepare("SELECT created_at FROM users WHERE id = :id");
-        if ($stmt->execute(["id" => $this->id])) {
+        if ($stmt->execute(["id" => $idBytes])) {
             $this->createdAt = $stmt->fetchColumn();
+        }
+
+        return $this;
+    }
+
+    public function update(array $params)
+    {
+        $db = Application::db();
+        $cols = array_intersect(static::getColumns(), array_keys($params));
+
+        if (! $cols) {
+            return $this;
+        }
+
+        $setClauses = implode(", ", array_map(static fn($c) => "{$c} = :{$c}", $cols));
+        $sql = "UPDATE users
+                SET {$setClauses}
+                WHERE id = :id_bin";
+
+        $stmt = $db->prepare($sql);
+
+        $params['id_bin'] = $this->getDbId();
+
+        $ok = $stmt->execute($params);
+
+        if (! $ok) {
+            error_log("Database update failed for User ID: {$this->id}");
+            return null;
+        }
+
+        return $this->syncAttributes($params);
+    }
+
+    private function syncAttributes(array $params): static
+    {
+        if (isset($params['username'])) {
+            $this->username = $params['username'];
+        }
+
+        if (isset($params['password_hash'])) {
+            $this->passwordHash = $params['password_hash'];
+        }
+
+        if (isset($params['ai_api_key'])) {
+            $this->aiApiKey = $params['ai_api_key']; 
+        }
+
+        if (isset($params['verified'])) {
+            $this->isVerified = (bool)$params['verified'];
+        }
+
+        if (isset($params['premium'])) {
+            $this->isPremium = (bool)$params['premium'];
         }
 
         return $this;

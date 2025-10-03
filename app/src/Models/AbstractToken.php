@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Application;
+use DateTimeImmutable;
 
 abstract class AbstractToken
 {
@@ -15,17 +16,23 @@ abstract class AbstractToken
     protected readonly \DateTimeImmutable $expiresAt;
     protected readonly \DateTimeImmutable $createdAt;
 
-    abstract protected static function getTableName(): string;
+    abstract public static function getTableName(): string;
 
     public function __construct(
         protected readonly string $userId,
-        int $expiresInSeconds = static::EXPIRES_IN_SECONDS
+        ?int $expiresInSeconds = null
     )
     {
         $this->token = bin2hex(random_bytes(16));
-        $this->tokenHash = hash("sha256", $this->token);
+        $this->tokenHash = static::generateTokenHash($this->token);
+        $expiry = $expiresInSeconds ?? static::EXPIRES_IN_SECONDS;
         $this->createdAt = new \DateTimeImmutable('now');
         $this->expiresAt = $this->createdAt->modify("+{$expiresInSeconds} seconds");
+    }
+
+    public static function getColumns(): array
+    {
+        return ["id", "user_id", "token_hash", "expires_at", "created_at"];
     }
 
     /**
@@ -47,6 +54,11 @@ abstract class AbstractToken
         $instance->expiresAt = new \DateTimeImmutable($data['expires_at']);
 
         return $instance;
+    }
+
+    public static function generateTokenHash(string $rawToken): string
+    {
+        return hash("sha256", $rawToken);
     }
 
     public static function getByUserId(string $userId): ?static
@@ -91,12 +103,13 @@ abstract class AbstractToken
         );
 
         if (!$stmt->execute(['hash' => $tokenHash])) {
-            return null;
+            throw new \Exception("Error while fetching token from {$tableName}");
+            // return null;
         }
 
         $data = $stmt->fetch();
 
-        if (!$data) {
+        if (! $data) {
             return null;
         }
         
@@ -131,6 +144,12 @@ abstract class AbstractToken
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function isExpired(): bool
+    {
+        $now = new DateTimeImmutable("now");
+        return $now >= $this->expiresAt;
     }
 
     public function save(): ?static

@@ -5,6 +5,7 @@ namespace App\Core;
 
 /**
 * @property-read ?array db
+* @property-read ?array mail
 */
 final class Config
 {
@@ -19,6 +20,10 @@ final class Config
                 'name' => $env['DB_NAME'],
                 'user' => $env['DB_USER'],
                 'password' => $env['DB_PASSWORD'],
+            ],
+            'mail' => [
+                'sender_email' => $env['SENDER_EMAIL'],
+                'sender_name' => $env['SENDER_NAME'],
             ]
         ];
     }

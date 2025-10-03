@@ -27,7 +27,7 @@ final class LoginForm extends AbstractForm
             return false;
         }
 
-        if (password_verify($this->password, $user->passwordHash)) {
+        if (password_verify($this->password, $user->getPasswordHash())) {
             return true;
         }
 

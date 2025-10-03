@@ -5,8 +5,10 @@ namespace App\Controllers;
 
 use App\Core\Application;
 use App\Core\View;
+use App\Forms\ForgotPasswordForm;
 use App\Forms\LoginForm;
 use App\Forms\RegistrationForm;
+use App\Forms\ResetPasswordForm;
 use App\Models\User;
 use App\Services\AuthService;
 use App\Services\UserService;
@@ -27,7 +29,7 @@ final class AuthController
         $loginForm = $this->getAndClearFromSession('login-form');
 
         return View::make("login", [
-            "token" => AuthService::getCSRF(),
+            "csrf_token" => AuthService::getCSRF(),
             "model" => $loginForm?->getFormModel() ?? null,
             "errors" => $loginForm?->errors ?? null,
         ]);
@@ -42,7 +44,7 @@ final class AuthController
         $regForm = $this->getAndClearFromSession('registration-form');
 
         return View::make("registration", [
-            "token" => AuthService::getCSRF(),
+            "csrf_token" => AuthService::getCSRF(),
             "password_rules" => new RegistrationForm()->getPasswordMessages(),
             "model" => $regForm?->getFormModel() ?? null,
             "errors" => $regForm?->errors ?? null,
@@ -58,16 +60,44 @@ final class AuthController
         $forgotPassForm = $this->getAndClearFromSession('forgot-password-form');
 
         return View::make("forgot-password", [
-            "token" => AuthService::getCSRF(),
+            "csrf_token" => AuthService::getCSRF(),
             "model" => $forgotPassForm?->getFormModel() ?? null,
             "errors" => $forgotPassForm?->errors ?? null,
         ]);
     }
 
+    public function resetPasswordView(): View
+    {
+        if (AuthService::isAuthenticated()) {
+            redirect("/");
+        }
+
+        $resetPasswordForm = $this->getAndClearFromSession("reset-password-form");
+        $req = Application::request();
+
+        if (! $resetPasswordForm) {
+            $userService = new UserService();
+
+            if (! $userService->checkResetPasswordToken($req->data['token'] ?? '')) {
+                redirect("/reset-password/invalid");
+                die();
+            }
+        }
+
+        return View::make("reset-password", [
+            "csrf_token" => AuthService::getCSRF(),
+            "model" => $resetPasswordForm?->getFormModel() ?? null,
+            "errors" => $resetPasswordForm?->errors ?? null,
+            "password_rules" => new ResetPasswordForm()->getPasswordMessages(),
+            "token" => $req->data['token']
+        ]);
+    }
+
+
     public function login()
     {
         $req = Application::request();
-        $token = $req->data['token'];
+        $token = $req->data['csrf_token'];
 
         if (! AuthService::checkCSRF($token)) {
             $this->forbidAndExit();
@@ -79,10 +109,10 @@ final class AuthController
         $isValid = $loginForm->validate();
 
         if ($isValid) {
-            $user = User::get($loginForm->email);
+            $user = User::getByEmail($loginForm->email);
 
             if ($loginForm->validateUser($user)) {
-                AuthService::login($user->id);
+                AuthService::login($user->getId());
                 redirect("/");
                 die();
             }
@@ -96,7 +126,7 @@ final class AuthController
     public function register()
     {
         $req = Application::request();
-        $token = $req->data['token'];
+        $token = $req->data['csrf_token'];
 
         if (! AuthService::checkCSRF($token)) {
             $this->forbidAndExit();
@@ -110,7 +140,7 @@ final class AuthController
         if ($isValid) {
             $userService = new UserService();
             $user = $userService->register($regForm->email, $regForm->password);
-            AuthService::login($user->id);
+            AuthService::login($user->getId());
             redirect("/");
             die();
         }
@@ -122,7 +152,64 @@ final class AuthController
 
     public function forgotPassword()
     {
+        $req = Application::request();
+        $token = $req->data['csrf_token'];
 
+        if (! AuthService::checkCSRF($token)) {
+            $this->forbidAndExit();
+        }
+
+        $forgotPassForm = new ForgotPasswordForm();
+        $forgotPassForm->load($req->data);
+        $isValid = $forgotPassForm->validate();
+
+        if ($isValid) {
+            $user = User::getByEmail($forgotPassForm->email);
+            if (! $user) {
+                redirect("/forgot-password/status");
+                die();
+            }
+
+            $userService = new UserService($user);
+            $userService->forgotPassword();
+            redirect("/forgot-password/status");
+            die();
+        }
+
+        $this->saveInSession('forgot-password-form', $forgotPassForm);
+        redirect("/forgot-password");
+        die();
+    }
+
+    public function resetPassword()
+    {
+        $req = Application::request();
+        $token = $req->data['csrf_token'];
+
+        if (! AuthService::checkCSRF($token)) {
+            $this->forbidAndExit();
+        }
+
+        $resetPassForm = new ResetPasswordForm();
+        $resetPassForm->load($req->data);
+        $isValid = $resetPassForm->validate();
+        $resetPassToken = $req->data['reset_pass_token'];
+
+        if ($isValid) {
+            $userService = new UserService();
+
+            if (! $userService->resetPassword($resetPassToken, $resetPassForm->password, $resetPassForm->confirmPassword)) {
+                redirect("/reset-password/invalid");
+                die();
+            }
+
+            redirect("/reset-password/success");
+            die();
+        } 
+
+        $this->saveInSession('reset-password-form', $resetPassForm);
+        redirect("/reset-password?token={$resetPassToken}");
+        die();
     }
 
     public function logout()

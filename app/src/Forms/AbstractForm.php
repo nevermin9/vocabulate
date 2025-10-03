@@ -116,10 +116,10 @@ abstract class AbstractForm
             Rule::Match->value => "This field must be the same as {" . Rule::Match->value . "}.",
             Rule::Min->value => "This field must be at least {" . Rule::Min->value . "} characters long.",
             Rule::Max->value => "This field must be maximum {" . Rule::Max->value . "} characters long.",
-            Rule::ALowercase->value => "Password must contain at least one lowercase letter.",
-            Rule::AUppercase->value => "Password must contain at least one uppercase letter.",
-            Rule::ANumber->value => "Password must contain at least one number.",
-            Rule::ASpecial->value => "Password must contain at least one special character."
+            Rule::ALowercase->value => "This field must contain at least one lowercase letter.",
+            Rule::AUppercase->value => "This field must contain at least one uppercase letter.",
+            Rule::ANumber->value => "This field must contain at least one number.",
+            Rule::ASpecial->value => "This field must contain at least one special character."
         ];
     }
 

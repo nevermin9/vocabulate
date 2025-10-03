@@ -7,7 +7,7 @@ class ForgotPasswordToken extends AbstractToken {
 
     protected const EXPIRES_IN_SECONDS = 30 * 60;
 
-    protected static function getTableName(): string
+    public static function getTableName(): string
     {
         return 'forgot_pass_tokens';
     }

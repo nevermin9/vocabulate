@@ -7,18 +7,13 @@ use App\Core\View;
 use App\Core\Application;
 use App\Models\Language;
 use App\Models\Stack;
-use App\Services\AuthService;
 use App\Services\StackService;
 
 class HomeController
 {
     public function index(): View
     {
-        if (! AuthService::isAuthenticated()) {
-            redirect("/login", 302);
-        }
-
-        $stacks = Stack::getAll(AuthService::getUserId());
+        $stacks = Stack::getAll(Application::authService()->getUserId());
         $langs = Language::getAll();
 
         return View::make("index", [
@@ -31,7 +26,7 @@ class HomeController
     public function createStack()
     {
         $req = Application::request();
-        $userId = AuthService::getUserId();
+        $userId = Application::authService()->getUserId();
         new StackService()->createStack($userId, $req->data['stack-name'], $req->data['stack-language']);
         redirect("/");
         die();

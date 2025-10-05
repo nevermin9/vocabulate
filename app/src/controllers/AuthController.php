@@ -105,7 +105,7 @@ final class AuthController extends AbstractController
         $auth = Application::authService();
 
         if ($isValid) {
-            $user = User::getByEmail($loginForm->email);
+            $user = User::findOne(["email" => $loginForm->email]);
 
             if ($loginForm->validateUserPassword($user)) {
                 $auth->login($user->getId());
@@ -129,7 +129,7 @@ final class AuthController extends AbstractController
         if ($isValid) {
             $userService = new UserService();
             $user = $userService->register($regForm->email, $regForm->password);
-            $auth->login($user->getId());
+            $auth->login($user->getIdString());
             redirect("/");
             die();
         }
@@ -146,7 +146,7 @@ final class AuthController extends AbstractController
         $isValid = $forgotPassForm->validate();
 
         if ($isValid) {
-            $user = User::getByEmail($forgotPassForm->email);
+            $user = User::findOne(["email" => $forgotPassForm->email]);
             if (! $user) {
                 redirect("/forgot-password/status");
                 die();

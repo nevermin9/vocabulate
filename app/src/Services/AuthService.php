@@ -55,7 +55,7 @@ final class AuthService
     private function generateCSRF(bool $isForce = false): void
     {
         $session = Application::session();
-        if ($isForce || ! empty($session->get(static::CSRF_TOKEN_KEY))) {
+        if ($isForce || empty($session->get(static::CSRF_TOKEN_KEY))) {
             $session->set(static::CSRF_TOKEN_KEY, bin2hex(random_bytes(32)));
         }
     }

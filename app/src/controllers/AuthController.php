@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\AbstractController;
+use App\Core\Application;
 use App\Core\Request;
 use App\Core\View;
 use App\Forms\ForgotPasswordForm;
@@ -11,14 +12,10 @@ use App\Forms\LoginForm;
 use App\Forms\RegistrationForm;
 use App\Forms\ResetPasswordForm;
 use App\Models\User;
-use App\Services\AuthService;
 use App\Services\UserService;
-use App\Traits\SessionStoreTrait;
 
 final class AuthController extends AbstractController
 {
-    use SessionStoreTrait;
-
     public function __construct()
     {
         $this->setLayout('guest-view');
@@ -26,10 +23,11 @@ final class AuthController extends AbstractController
 
     public function loginView(): View
     {
-        $loginForm = $this->getAndClearFromSession('login-form');
+        $loginForm = Application::session()->getFlash('login-form');
+        $auth = Application::authService();
 
         return $this->renderView("login", [
-            "csrf_token" => AuthService::getCSRF(),
+            "csrf_token" => $auth->getCSRF(),
             "model" => $loginForm?->getFormModel() ?? null,
             "errors" => $loginForm?->errors ?? null,
         ]);
@@ -37,10 +35,11 @@ final class AuthController extends AbstractController
 
     public function registrationView(): View
     {
-        $regForm = $this->getAndClearFromSession('registration-form');
+        $regForm = Application::session()->getFlash('registration-form');
+        $auth = Application::authService();
 
         return $this->renderView("registration", [
-            "csrf_token" => AuthService::getCSRF(),
+            "csrf_token" => $auth->getCSRF(),
             "password_rules" => new RegistrationForm()->getPasswordMessages(),
             "model" => $regForm?->getFormModel() ?? null,
             "errors" => $regForm?->errors ?? null,
@@ -49,10 +48,11 @@ final class AuthController extends AbstractController
 
     public function forgotPasswordView(): View
     {
-        $forgotPassForm = $this->getAndClearFromSession('forgot-password-form');
+        $forgotPassForm = Application::session()->getFlash('forgot-password-form');
+        $auth = Application::authService();
 
         return $this->renderView("forgot-password", [
-            "csrf_token" => AuthService::getCSRF(),
+            "csrf_token" => $auth->getCSRF(),
             "model" => $forgotPassForm?->getFormModel() ?? null,
             "errors" => $forgotPassForm?->errors ?? null,
         ]);
@@ -60,7 +60,7 @@ final class AuthController extends AbstractController
 
     public function resetPasswordView(Request $req): View
     {
-        $resetPasswordForm = $this->getAndClearFromSession("reset-password-form");
+        $resetPasswordForm = Application::session()->getFlash("reset-password-form");
 
         if (! $resetPasswordForm) {
             $userService = new UserService();
@@ -71,8 +71,10 @@ final class AuthController extends AbstractController
             }
         }
 
+        $auth = Application::authService();
+
         return $this->renderView("reset-password", [
-            "csrf_token" => AuthService::getCSRF(),
+            "csrf_token" => $auth->getCSRF(),
             "model" => $resetPasswordForm?->getFormModel() ?? null,
             "errors" => $resetPasswordForm?->errors ?? null,
             "password_rules" => new ResetPasswordForm()->getPasswordMessages(),
@@ -99,20 +101,20 @@ final class AuthController extends AbstractController
     {
         $loginForm = new LoginForm();
         $loginForm->load($req->data);
-
         $isValid = $loginForm->validate();
+        $auth = Application::authService();
 
         if ($isValid) {
             $user = User::getByEmail($loginForm->email);
 
             if ($loginForm->validateUserPassword($user)) {
-                AuthService::login($user->getId());
+                $auth->login($user->getId());
                 redirect("/");
                 die();
             }
         }
 
-        $this->saveInSession('login-form', $loginForm);
+        Application::session()->setFlash('login-form', $loginForm);
         redirect("/login");
         die();
     }
@@ -121,18 +123,18 @@ final class AuthController extends AbstractController
     {
         $regForm = new RegistrationForm();
         $regForm->load($req->data);
-
         $isValid = $regForm->validate();
+        $auth = Application::authService();
 
         if ($isValid) {
             $userService = new UserService();
             $user = $userService->register($regForm->email, $regForm->password);
-            AuthService::login($user->getId());
+            $auth->login($user->getId());
             redirect("/");
             die();
         }
 
-        $this->saveInSession('registration-form', $regForm);
+        Application::session()->setFlash('registration-form', $regForm);
         redirect("/registration");
         die();
     }
@@ -156,7 +158,7 @@ final class AuthController extends AbstractController
             die();
         }
 
-        $this->saveInSession('forgot-password-form', $forgotPassForm);
+        Application::session()->setFlash('forgot-password-form', $forgotPassForm);
         redirect("/forgot-password");
         die();
     }
@@ -180,14 +182,14 @@ final class AuthController extends AbstractController
             die();
         } 
 
-        $this->saveInSession('reset-password-form', $resetPassForm);
+        Application::session()->setFlash('reset-password-form', $resetPassForm);
         redirect("/reset-password?token={$resetPassToken}");
         die();
     }
 
     public function logout()
     {
-        AuthService::logout();
+        Application::authService()->logout();
         redirect("/login");
         die();
     }

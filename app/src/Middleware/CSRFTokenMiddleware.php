@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Core\Application;
 use App\Core\Interfaces\MiddlewareInterface;
 use App\Core\Request;
-use App\Services\AuthService;
 use App\Traits\CSRFGuardTrait;
 
 class CSRFTokenMiddleware implements MiddlewareInterface
@@ -14,7 +14,8 @@ class CSRFTokenMiddleware implements MiddlewareInterface
 
     public function handle(Request $req): mixed
     {
-        if (isset($req->data['csrf_token']) && ! AuthService::checkCSRF($req->data['csrf_token'])) {
+        $auth = Application::authService();
+        if (isset($req->data['csrf_token']) && ! $auth->checkCSRF($req->data['csrf_token'])) {
             $this->forbidAndExit();
         } 
 

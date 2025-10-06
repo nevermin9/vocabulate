@@ -123,4 +123,12 @@ class User extends AbstractModel
         $this->id = $this->generateIdBytes();
         return parent::save();
     }
+
+    public static function findOne(array $where): ?static
+    {
+        if (array_key_exists(static::primaryKey(), $where)) {
+            $where[static::primaryKey()] = $this->convertStringToBytes($where[static::primaryKey()]);
+        }
+        return parent::findOne($where);
+    }
 }

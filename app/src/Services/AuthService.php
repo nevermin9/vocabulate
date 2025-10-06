@@ -3,60 +3,85 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Application;
+use App\Core\Session;
+use App\Models\User;
 
 final class AuthService
 {
     private const USER_KEY = "user_id";
     private const CSRF_TOKEN_KEY = "csrf_token";
+    private ?User $user = null;
+
+    public function __construct(private Session $session)
+    {
+        $this->generateCSRF();
+        
+        if ($this->isAuthenticated()) {
+            $this->user = User::findOne([User::primaryKey() => $this->getUserId()]);
+            
+            if ($this->user === null) {
+                $this->logout();
+            }
+        }
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
 
     public function isAuthenticated(): bool
     {
-        $session = Application::session();
-        return ! empty($session->get(static::USER_KEY));
+        return !empty($this->session->get(static::USER_KEY));
     }
 
-    public function login(string $userId): void
+    public function login(User $user): void
     {
-        $session = Application::session();
-        $session->restart();
-        $this->generateCSRF(true);
-        $session->set(static::USER_KEY, $userId);
+        $this->session->restart();
+        $this->session->set(static::USER_KEY, $user->getIdString());
+        $this->user = $user;
     }
 
     public function logout(): void
     {
-        $session = Application::session();
-        $session->clear();
+        $this->session->clear();
+        $this->user = null;
     }
 
-    public function getUserId(): string
+    public function getUserId(): ?string
     {
-        return Application::session()->get(static::USER_KEY);
+        return $this->session->get(static::USER_KEY);
     }
 
     public function getCSRF(): string
     {
-        self::generateCSRF();
-        return Application::session()->get(static::CSRF_TOKEN_KEY);
+        return $this->session->get(static::CSRF_TOKEN_KEY);
     }
 
     public function checkCSRF(string $userToken): bool
     {
-        $session = Application::session();
-        return hash_equals($session->get(static::CSRF_TOKEN_KEY), $userToken);
+        $sessionToken = $this->session->get(static::CSRF_TOKEN_KEY);
+        
+        if ($sessionToken === null) {
+            return false;
+        }
+        
+        return hash_equals($sessionToken, $userToken);
     }
 
-    public function unsetCSRF()
+    public function unsetCSRF(): void
     {
-        Application::session()->remove(static::CSRF_TOKEN_KEY);
+        $this->session->remove(static::CSRF_TOKEN_KEY);
     }
 
-    private function generateCSRF(bool $isForce = false): void
+    /**
+     * Generates a CSRF token if one doesn't exist.
+     * One token per session is sufficient for CSRF protection.
+     */
+    private function generateCSRF(): void
     {
-        $session = Application::session();
-        if ($isForce || empty($session->get(static::CSRF_TOKEN_KEY))) {
-            $session->set(static::CSRF_TOKEN_KEY, bin2hex(random_bytes(32)));
+        if (empty($this->session->get(static::CSRF_TOKEN_KEY))) {
+            $this->session->set(static::CSRF_TOKEN_KEY, bin2hex(random_bytes(32)));
         }
     }
 }

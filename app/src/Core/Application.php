@@ -24,7 +24,7 @@ final class Application
         static::$config = $config;
         static::$db = new DB(static::$config->db);
         static::$session = new Session();
-        static::$auth = new AuthService();
+        static::$auth = new AuthService(static::session());
     }
 
     public static function request(): Request
@@ -57,8 +57,21 @@ final class Application
         try {
             echo $this->router->resolve(static::$request);
         } catch (\Throwable $e) {
-            echo "error: ";
-            echo $e->getFile() . $e->getLine() . "<br>" . $e->getTrace() . "<br>" . $e->getMessage();
+            $this->handleError($e);
+        }
+    }
+
+    private function handleError(\Throwable $e): void
+    {
+        // Better error handling
+        // error_log($e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+        
+        if ($this->config->debug) {
+            echo "Error: " . $e->getMessage() . "<br>";
+            echo "File: " . $e->getFile() . ":" . $e->getLine() . "<br>";
+            echo "Trace: <pre>" . $e->getTraceAsString() . "</pre>";
+        } else {
+            echo "An error occurred. Please try again later.";
         }
     }
 }

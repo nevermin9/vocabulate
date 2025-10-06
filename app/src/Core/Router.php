@@ -57,6 +57,11 @@ final class Router
         return $this->routingMap;
     }
 
+    public function getGlobalMiddleware(): array
+    {
+        return $this->globalMiddleware;
+    }
+
     /**
      * @param string $route
      * @param callable|array|string $action

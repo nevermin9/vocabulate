@@ -5,6 +5,7 @@ namespace App\Core;
 
 use App\Core\Router;
 use App\Core\Request;
+use App\Core\RequestFactory;
 use App\Core\Config;
 use App\Core\DB;
 use App\Core\Session;
@@ -20,7 +21,7 @@ final class Application
 
     public function __construct(private Router $router, Config $config)
     {
-        static::$request = new Request();
+        static::$request = RequestFactory::createFromGlobals();
         static::$config = $config;
         static::$db = new DB(static::$config->db);
         static::$session = new Session();

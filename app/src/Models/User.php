@@ -75,7 +75,7 @@ class User extends AbstractModel
     public function getIdString(): string
     {
         // Returns the human-readable UUID string
-        return $this->convertBytesToString($this->id);
+        return static::convertBytesToString($this->id);
     }
 
     public function getUsername(): string
@@ -120,14 +120,14 @@ class User extends AbstractModel
      */
     public function save(): bool
     {
-        $this->id = $this->generateIdBytes();
+        $this->id = static::generateIdBytes();
         return parent::save();
     }
 
     public static function findOne(array $where): ?static
     {
         if (array_key_exists(static::primaryKey(), $where)) {
-            $where[static::primaryKey()] = $this->convertStringToBytes($where[static::primaryKey()]);
+            $where[static::primaryKey()] = static::convertStringToBytes($where[static::primaryKey()]);
         }
         return parent::findOne($where);
     }

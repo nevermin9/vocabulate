@@ -66,7 +66,8 @@ final class Application
         // Better error handling
         // error_log($e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
         
-        if ($this->config->debug) {
+        // if ($this->config->debug) {
+        if (static::config()->app['is-dev']) {
             echo "Error: " . $e->getMessage() . "<br>";
             echo "File: " . $e->getFile() . ":" . $e->getLine() . "<br>";
             echo "Trace: <pre>" . $e->getTraceAsString() . "</pre>";

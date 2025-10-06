@@ -5,6 +5,7 @@ namespace App\Core;
 
 /**
 * @property-read ?array db
+* @property-read ?array app
 * @property-read ?array mail
 */
 final class Config
@@ -14,6 +15,9 @@ final class Config
     public function __construct(array $env)
     {
         $this->config = [
+            'app' => [
+                'is-dev' => $env['IS_DEV'] === "true",
+            ],
             'db' => [
                 'host' => $env['DB_HOST'],
                 'driver' => $env['DB_DRIVER'] ?? 'mysql',

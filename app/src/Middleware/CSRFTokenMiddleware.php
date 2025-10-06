@@ -14,8 +14,13 @@ class CSRFTokenMiddleware implements MiddlewareInterface
 
     public function handle(Request $req): mixed
     {
+        if ($req->method !== "post") {
+            return null;
+        }
+
         $auth = Application::authService();
-        if (isset($req->data['csrf_token']) && ! $auth->checkCSRF($req->data['csrf_token'])) {
+
+        if (empty($req->data['csrf_token']) || ! $auth->checkCSRF($req->data['csrf_token'])) {
             $this->forbidAndExit();
         } 
 

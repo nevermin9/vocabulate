@@ -36,7 +36,7 @@ final class UserService
             throw new \Exception("user instance is null");
         }
 
-        $userId = $this->user->getDbId();
+        $userId = $this->user->getId();
         $token = ForgotPasswordToken::getByUserId($userId);
 
         if ($token) {

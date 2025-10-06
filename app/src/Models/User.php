@@ -40,6 +40,11 @@ class User extends AbstractModel
         $this->password_hash = $password_hash;
     }
 
+    protected static function usesAutoIncrementPrimaryKey(): bool
+    {
+        return false;
+    }
+
     public static function getTableName(): string
     {
         return 'users';
@@ -50,7 +55,7 @@ class User extends AbstractModel
         return ["id", "username", "email", "password_hash", "verified", "premium", "ai_api_key", "created_at"];
     }
 
-    protected static function hydrate(array $data): static
+    public static function fromDatabase(array $data): static
     {
         $user = new static($data['username'], $data['email'], $data['password_hash']);
         $user->id = $data['id'];

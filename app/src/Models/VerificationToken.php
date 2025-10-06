@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-class VerificationToken extends AbstractToken {
+class VerificationToken extends AbstractToken 
+{
 
     public static function getTableName(): string
     {

@@ -11,12 +11,36 @@ abstract class AbstractModel
 
     abstract public static function getColumns(): array;
 
+    abstract public static function fromDatabase(array $data): static;
+
     public static function primaryKey(): string
     {
         return 'id';
     }
 
-    abstract protected static function hydrate(array $data): static;
+    /**
+     * Determines if this model uses auto-incrementing primary key.
+     * Override this method to return false for models that generate their own IDs (e.g., UUIDs).
+     */
+    protected static function usesAutoIncrementPrimaryKey(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Returns columns that should be included in INSERT statements.
+     * By default, excludes the primary key for auto-increment models.
+     */
+    protected static function getColumnsForInsert(): array
+    {
+        $columns = static::getColumns();
+        
+        if (static::usesAutoIncrementPrimaryKey()) {
+            return array_values(array_filter($columns, fn($col) => $col !== static::primaryKey()));
+        }
+        
+        return $columns;
+    }
 
     /**
      * Prepares an SQL statement using the application's database connection.
@@ -33,7 +57,7 @@ abstract class AbstractModel
     public function save(): bool
     {
         $tableName = static::getTableName();
-        $columns = static::getColumns();
+        $columns = static::getColumnsForInsert();
         
         $placeholders = array_map(static fn($c) => ":{$c}", $columns);
         $stmt = static::prepare(
@@ -74,7 +98,7 @@ abstract class AbstractModel
         $stmt->execute();
         
         $data = $stmt->fetch();
-        return $data ? static::hydrate($data) : null;
+        return $data ? static::fromDatabase($data) : null;
     }
 
     /**
@@ -117,6 +141,19 @@ abstract class AbstractModel
         return $this->syncAttributes($params);
     }
 
+    public function delete(): bool
+    {
+        $primaryKeyName = static::primaryKey();
+        if (!isset($this->{$primaryKeyName})) {
+            return false;
+        }
+
+        $tableName = static::getTableName();
+        $stmt = static::prepare("DELETE FROM {$tableName} WHERE {$primaryKeyName} = ?");
+        
+        return $stmt->execute([$this->{$primaryKeyName}]);
+    }
+
     /**
      * Syncs the object's properties with the successfully updated parameters.
      * This method must be called after a successful database update.
@@ -128,7 +165,6 @@ abstract class AbstractModel
     {
         foreach ($params as $key => $value) {
             if (property_exists($this, $key) && $key !== static::primaryKey()) {
-                echo "before errorr";
                 
                 if (is_int($this->{$key})) {
                     $this->$key = (int) $value;

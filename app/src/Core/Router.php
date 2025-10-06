@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Exceptions\NotFoundException;
+
 final class Router
 {
     private array $routingMap = [];
@@ -48,6 +50,11 @@ final class Router
         $this->globalMiddleware = $middleware;
 
         return $this;
+    }
+
+    public function getRouter(): array
+    {
+        return $this->routingMap;
     }
 
     /**
@@ -123,16 +130,12 @@ final class Router
                 $paramAssoc[$paramName] = $parameter->getDefaultValue();
                 continue;
             }
-
-            if (!$parameter->isOptional()) {
-                throw new \Exception("Missing required parameter '{$paramName}' for route action.");
-            }
         }
 
         return $paramAssoc;
     }
 
-    public function resolve(Request $req)
+    public function resolve(Request $req): mixed
     {
         $result = $this->runGlobalMiddleware($req);
 
@@ -190,6 +193,6 @@ final class Router
             }
         }
 
-        throw new \Exception("Implement route not found exception");
+        throw NotFoundException::forRoute($req->path, $req->method);
     }
 }

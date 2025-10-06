@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Mails;
 
-class ResetPasswordMail extends AbstractMail
+class VerificationMail extends AbstractMail
 {
     public function __construct(
         protected string $subject,
@@ -15,6 +15,6 @@ class ResetPasswordMail extends AbstractMail
 
     protected static function getTemplatePath(): string
     {
-        return parent::getTemplatePath() . "reset-password.html";
+        return parent::getTemplatePath() . "verification-link.html";
     }
 }

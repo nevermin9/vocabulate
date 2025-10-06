@@ -90,9 +90,9 @@
                 <span class="app-checkbox__label">Show password </span>
             </label>
 
-            <input type="hidden" name="reset_pass_token" value="<?php echo $this->params['token'] ?>" />
+            <input type="hidden" name="reset_pass_token" value="<?php echo $this->params['reset_pass_token'] ?>" />
 
-            <input type="hidden" name="csrf_token" value="<?php echo $this->params['csrf_token'] ?>" />
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($this->params['csrf_token']) ?>" />
 
             <button 
                 class="auth-form__btn  app-btn app-btn--primary"

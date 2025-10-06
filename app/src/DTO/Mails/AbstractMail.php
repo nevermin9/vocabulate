@@ -17,7 +17,7 @@ abstract class AbstractMail implements MailInterface
 
     protected static function getTemplatePath(): string
     {
-        return "";
+        return dirname(__DIR__) . "/../MailTemplates/";
     }
 
     public function isHTML(): bool

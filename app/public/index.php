@@ -12,9 +12,11 @@ use App\Core\Config;
 use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\StackOverviewController;
+use App\Controllers\VerificationController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\CSRFTokenMiddleware;
 use App\Middleware\GuestMiddleware;
+use App\Middleware\VerificationMiddleware;
 
 define('VIEWS_DIR', dirname(__DIR__) . "/src/Views");
 define('LAYOUTS_DIR', dirname(__DIR__) . "/src/Views/_layouts");
@@ -27,11 +29,16 @@ $router = new Router();
 $router
     ->registerGlobalMiddleware([CSRFTokenMiddleware::class])
     // user's routes
-    ->get("/", [HomeController::class, "index"], [AuthMiddleware::class])
-    ->get("/stack/:id", [StackOverviewController::class, "index"], [AuthMiddleware::class])
+    ->get("/", [HomeController::class, "index"], [AuthMiddleware::class, VerificationMiddleware::class])
+    ->get("/stack/:id", [StackOverviewController::class, "index"], [AuthMiddleware::class, VerificationMiddleware::class])
+    ->post("/stack/create", [HomeController::class, "createStack"], [AuthMiddleware::class, VerificationMiddleware::class])
+    ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"], [AuthMiddleware::class, VerificationMiddleware::class])
     ->get("/logout", [AuthController::class, "logout"], [AuthMiddleware::class])
-    ->post("/stack/create", [HomeController::class, "createStack"], [AuthMiddleware::class])
-    ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"], [AuthMiddleware::class])
+    ->get(VerificationMiddleware::getVerificationURL(), [VerificationController::class, "indexView"], [AuthMiddleware::class])
+    ->post("/verifiction/send", [VerificationController::class, "sendVerificationLink"], [AuthMiddleware::class])
+    ->get("/verify", [VerificationController::class, "verify"])
+    ->get("/verification/invalid", [VerificationController::class, "verificationInvalidView"])
+    ->get("/verification/success", [VerificationController::class, "verificationSuccessView"], [AuthMiddleware::class, VerificationMiddleware::class])
 
     // anonymous's routes
     ->get("/registration", [AuthController::class, "registrationView"], [GuestMiddleware::class])

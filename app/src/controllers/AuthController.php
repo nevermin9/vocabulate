@@ -11,6 +11,7 @@ use App\Forms\ForgotPasswordForm;
 use App\Forms\LoginForm;
 use App\Forms\RegistrationForm;
 use App\Forms\ResetPasswordForm;
+use App\Models\ForgotPasswordToken;
 use App\Models\User;
 use App\Services\UserService;
 
@@ -61,11 +62,12 @@ final class AuthController extends AbstractController
     public function resetPasswordView(Request $req): View
     {
         $resetPasswordForm = Application::session()->getFlash("reset-password-form");
+        $token = $req->data['token'] ?? '';
 
         if (! $resetPasswordForm) {
             $userService = new UserService();
 
-            if (! $userService->checkResetPasswordToken($req->data['token'] ?? '')) {
+            if (! $userService->checkToken($token, ForgotPasswordToken::class)) {
                 redirect("/reset-password/invalid");
                 die();
             }
@@ -78,7 +80,7 @@ final class AuthController extends AbstractController
             "model" => $resetPasswordForm?->getFormModel() ?? null,
             "errors" => $resetPasswordForm?->errors ?? null,
             "password_rules" => new ResetPasswordForm()->getPasswordMessages(),
-            "token" => $req->data['token']
+            "reset_pass_token" => $token
         ]);
     }
 

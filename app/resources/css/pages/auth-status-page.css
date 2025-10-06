@@ -39,7 +39,8 @@
     }
 
     .auth-status-page__title,
-    .auth-status-page__sub-title {
+    .auth-status-page__sub-title,
+    .auth-status-page__form {
         margin: 0;
         margin-bottom: 1rem;
     }

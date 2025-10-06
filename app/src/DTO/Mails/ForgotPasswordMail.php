@@ -7,6 +7,6 @@ class ResetPasswordMail extends AbstractMail
 {
     protected static function getTemplatePath(): string
     {
-        return dirname(__DIR__) . "/MailTemplates/"
+        return dirname(__DIR__) . "/MailTemplates/";
     }
 }

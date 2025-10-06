@@ -2,3 +2,4 @@
 **/vendor/
 **/storage/
 **/.env
+**/.phpunit.result.cache

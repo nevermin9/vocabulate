@@ -21,6 +21,7 @@ class NotFoundException extends HttpException
      */
     public static function forRoute(string $path, string $method): static
     {
+        $method = strtoupper($method);
         return new static("Route not found: {$method} {$path}");
     }
 

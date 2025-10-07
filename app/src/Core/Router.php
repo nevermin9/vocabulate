@@ -109,9 +109,17 @@ final class Router
     {
         if (is_array($callable)) {
             [$class, $method] = $callable;
+
+            if (!is_callable($callable)) {
+                return [];
+            }
+
             $reflector = new \ReflectionMethod($class, $method);
-        } else {
+
+        } elseif (is_callable($callable)) {
             $reflector = new \ReflectionFunction($callable);
+        } else {
+            return [];
         }
 
         $paramAssoc = [];

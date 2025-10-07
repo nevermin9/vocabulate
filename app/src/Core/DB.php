@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Attributes\Container\Singleton;
 use App\Traits\FilesystemReaderTrait;
 
 /**
 * @mixin \PDO
 */
-final class DB
+#[Singleton]
+class DB
 {
     use FilesystemReaderTrait;
 

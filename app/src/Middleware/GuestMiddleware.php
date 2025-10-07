@@ -6,13 +6,17 @@ namespace App\Middleware;
 use App\Core\Application;
 use App\Core\Interfaces\MiddlewareInterface;
 use App\Core\Request;
+use App\Services\AuthService;
 
 class GuestMiddleware implements MiddlewareInterface
 {
+    public function __construct(protected AuthService $auth)
+    {
+    }
+
     public function handle(Request $req): mixed
     {
-        $auth = Application::authService();
-        if ($auth->isAuthenticated()) {
+        if ($this->auth->isAuthenticated()) {
             redirect("/");
             die();
         }

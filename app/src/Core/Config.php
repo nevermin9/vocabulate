@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Attributes\Container\Singleton;
+
 /**
 * @property-read ?array db
 * @property-read ?array app
 * @property-read ?array mail
 */
-final class Config
+#[Singleton]
+class Config
 {
     private array $config;
 

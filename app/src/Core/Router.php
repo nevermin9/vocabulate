@@ -3,12 +3,18 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Attributes\Container\Singleton;
 use App\Exceptions\NotFoundException;
 
-final class Router
+#[Singleton]
+class Router
 {
     private array $routingMap = [];
     private array $globalMiddleware = [];
+
+    public function __construct(protected Container $container)
+    {
+    }
 
     public function get(string $route, callable|array|string $action, string|array $middleware = []): static
     {
@@ -150,10 +156,10 @@ final class Router
 
     public function resolve(Request $req): mixed
     {
-        $result = $this->runGlobalMiddleware($req);
+        $middlewareResponse = $this->runMiddleware($req, $this->globalMiddleware);
 
-        if ($result) {
-            return $result;
+        if ($middlewareResponse) {
+            return $middlewareResponse;
         }
 
         $requestMethod = $req->method;
@@ -175,15 +181,10 @@ final class Router
                 $action = $routeData['action'];
                 $middleware = $routeData['middleware'];
 
-                foreach ($middleware as $middlewareClass) {
-                    if (class_exists($middlewareClass)) {
-                        $middlewareObj = new $middlewareClass();
-                        $response = $middlewareObj->handle($req); 
+                $middlewareResponse = $this->runMiddleware($req, $middleware);
 
-                        if ($response !== null) {
-                            return $response; 
-                        }
-                    }
+                if ($middlewareResponse) {
+                    return $middlewareResponse;
                 }
 
                 $paramAssoc = $this->getCallableParameters($action, $routeParams, $req);
@@ -196,7 +197,7 @@ final class Router
                     [$class, $method] = $action;
 
                     if (class_exists($class)) {
-                        $obj = new $class();
+                        $obj = $this->container->get($class);
 
                         if (method_exists($obj, $method)) {
                             return call_user_func_array([$obj, $method], $paramAssoc);
@@ -207,5 +208,21 @@ final class Router
         }
 
         throw NotFoundException::forRoute($req->path, $req->method);
+    }
+
+    private function runMiddleware(Request $req, array &$middleware): mixed
+    {
+        foreach ($middleware as $middlewareClass) {
+            if (class_exists($middlewareClass)) {
+                $middlewareObj = $this->container->get($middlewareClass);
+                $response = $middlewareObj->handle($req); 
+
+                if ($response !== null) {
+                    return $response; 
+                }
+            }
+        }
+
+        return null;
     }
 }

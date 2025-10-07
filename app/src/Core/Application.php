@@ -9,54 +9,42 @@ use App\Core\RequestFactory;
 use App\Core\Config;
 use App\Core\DB;
 use App\Core\Session;
+use App\Repositories\Token\TokenRepository;
+use App\Repositories\Token\TokenRepositoryInterface;
+use App\Repositories\User\UserRepository;
+use App\Repositories\User\UserRepositoryInterface;
 use App\Services\AuthService;
 
 final class Application
 {
-    private static Request $request;
-    private static Config $config;
-    private static DB $db;
-    private static Session $session;
-    private static AuthService $auth;
+    private static Application $instance;
+    protected Request $request;
 
-    public function __construct(private Router $router, Config $config)
+    public function __construct(
+        public readonly Container $container,
+        protected Router $router,
+        protected Config $config
+    )
     {
-        static::$request = RequestFactory::createFromGlobals();
-        static::$config = $config;
-        static::$db = new DB(static::$config->db);
-        static::$session = new Session();
-        static::$auth = new AuthService(static::session());
+        static::$instance = $this;
+        $this->request = RequestFactory::createFromGlobals();
+        $this->container->bind(Config::class, fn() => $this->config, true);
+        $this->container->bind(DB::class, fn() => new DB($this->config->db), true);
+        $this->container->bind(Session::class, fn() => new Session(), true);
+        $this->container->bind(AuthService::class, AuthService::class, true);
+        $this->container->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->container->bind(TokenRepositoryInterface::class, TokenRepository::class);
     }
 
-    public static function request(): Request
+    public static function app(): ?Application
     {
-        return static::$request;
-    }
-
-    public static function config(): Config
-    {
-        return static::$config;
-    }
-
-    public static function db(): DB
-    {
-        return static::$db;
-    }
-
-    public static function session(): Session
-    {
-        return static::$session;
-    }
-
-    public static function authService(): AuthService
-    {
-        return static::$auth;
+        return static::$instance;
     }
 
     public function run(): void
     {
         try {
-            echo $this->router->resolve(static::$request);
+            echo $this->router->resolve($this->request);
         } catch (\Throwable $e) {
             $this->handleError($e);
         }
@@ -67,8 +55,7 @@ final class Application
         // Better error handling
         // error_log($e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
         
-        // if ($this->config->debug) {
-        if (static::config()->app['is-dev']) {
+        if ($this->config->app['is-dev']) {
             echo "Error: " . $e->getMessage() . "<br>";
             echo "File: " . $e->getFile() . ":" . $e->getLine() . "<br>";
             echo "Trace: <pre>" . $e->getTraceAsString() . "</pre>";

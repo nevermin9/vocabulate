@@ -3,12 +3,16 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
-use App\Core\Application;
 use App\Core\Interfaces\MiddlewareInterface;
 use App\Core\Request;
+use App\Services\AuthService;
 
 class VerificationMiddleware implements MiddlewareInterface
 {
+    public function __construct(protected AuthService $auth)
+    {
+    }
+
     public static function getVerificationURL(): string
     {
         return "/verification-pending";
@@ -16,8 +20,7 @@ class VerificationMiddleware implements MiddlewareInterface
 
     public function handle(Request $req): mixed
     {
-        $auth = Application::authService();
-        $isVerified = $auth->getUser()->isVerified();
+        $isVerified = $this->auth->getUser()?->isVerified();
 
         if ($isVerified) {
             return null;

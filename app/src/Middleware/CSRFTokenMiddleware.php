@@ -3,14 +3,18 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
-use App\Core\Application;
 use App\Core\Interfaces\MiddlewareInterface;
 use App\Core\Request;
+use App\Services\AuthService;
 use App\Traits\CSRFGuardTrait;
 
 class CSRFTokenMiddleware implements MiddlewareInterface
 {
     use CSRFGuardTrait;
+
+    public function __construct(protected AuthService $auth)
+    {
+    }
 
     public function handle(Request $req): mixed
     {
@@ -18,9 +22,7 @@ class CSRFTokenMiddleware implements MiddlewareInterface
             return null;
         }
 
-        $auth = Application::authService();
-
-        if (empty($req->data['csrf_token']) || ! $auth->checkCSRF($req->data['csrf_token'])) {
+        if (empty($req->data['csrf_token']) || ! $this->auth->checkCSRF($req->data['csrf_token'])) {
             $this->forbidAndExit();
         } 
 

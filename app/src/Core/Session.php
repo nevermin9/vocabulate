@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Attributes\Container\Singleton;
+
+#[Singleton]
 class Session
 {
     protected const FLASH_DATA_KEY = 'flash-data';

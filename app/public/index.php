@@ -13,6 +13,7 @@ use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\StackOverviewController;
 use App\Controllers\VerificationController;
+use App\Core\Container;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\CSRFTokenMiddleware;
 use App\Middleware\GuestMiddleware;
@@ -24,7 +25,8 @@ define('LAYOUTS_DIR', dirname(__DIR__) . "/src/Views/_layouts");
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
-$router = new Router();
+$container = new Container();
+$router = new Router($container);
 
 $router
     ->registerGlobalMiddleware([CSRFTokenMiddleware::class])
@@ -55,5 +57,5 @@ $router
 ;
 
 
-new Application($router, new Config($_ENV))->run();
+new Application($container, $router, new Config($_ENV))->run();
 

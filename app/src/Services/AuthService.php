@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Attributes\Container\Singleton;
 use App\Core\Session;
 use App\Models\User;
 
-final class AuthService
+#[Singleton]
+class AuthService
 {
     private const USER_KEY = "user_id";
     private const CSRF_TOKEN_KEY = "csrf_token";

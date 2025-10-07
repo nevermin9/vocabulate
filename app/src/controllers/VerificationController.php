@@ -7,12 +7,15 @@ use App\Core\AbstractController;
 use App\Core\Application;
 use App\Core\Request;
 use App\Core\View;
-use App\Models\VerificationToken;
+use App\Services\AuthService;
 use App\Services\UserService;
 
 class VerificationController extends AbstractController
 {
-    public function __construct()
+    public function __construct(
+        protected AuthService $auth,
+        protected UserService $userService
+    )
     {
         $this->setLayout('guest-view');
     }
@@ -20,15 +23,15 @@ class VerificationController extends AbstractController
     public function indexView(): View
     {
         return $this->renderView("verification-pending", [
-            "csrf_token" => Application::authService()->getCSRF(),
+            "csrf_token" => $this->auth->getCSRF(),
         ]);
     }
 
     public function verificationInvalidView(): View
     {
         return $this->renderView("verification-invalid", [
-            "is-auth" => Application::authService()->isAuthenticated(),
-            "csrf_token" => Application::authService()->getCSRF(),
+            "is-auth" => $this->auth->isAuthenticated(),
+            "csrf_token" => $this->auth->getCSRF(),
         ]);
     }
 
@@ -40,8 +43,7 @@ class VerificationController extends AbstractController
     public function sendVerificationLink(Request $req)
     {
         $redirect = $req->data['redirect_back'];
-        $userService = new UserService(Application::authService()->getUser());
-        $userService->sendVerificationLink();
+        $this->userService->sendVerificationLink($this->auth->getUser());
         redirect($redirect);
         die();
     }
@@ -49,25 +51,23 @@ class VerificationController extends AbstractController
     public function verify(Request $req)
     {
         $token = $req->data['token'] ?? '';
-        $userService = new UserService();
-        $isValid = $userService->checkToken($token, VerificationToken::class);
+        $isValid = $this->userService->validateVerificationToken($token);
 
         if (!$isValid) {
             redirect("/verification/invalid");
             die();
         }
 
-        $user = $userService->verifyUser($token);
+        $user = $this->userService->verifyUser($token);
 
         if (! $user) {
             redirect("/verification/invalid");
             die();
         }
 
-        $auth = Application::authService();
 
-        if (! $auth->isAuthenticated()) {
-            $auth->login($user);
+        if (! $this->auth->isAuthenticated()) {
+            $this->auth->login($user);
         }
 
         redirect("/verification/success");

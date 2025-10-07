@@ -3,125 +3,108 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Application;
 use App\DTO\Mails\Addressee;
 use App\DTO\Mails\ResetPasswordMail;
-use App\DTO\Mails\Mail;
 use App\DTO\Mails\VerificationMail;
-use App\Models\Associations\UserTokenAssociation;
 use App\Models\ForgotPasswordToken;
 use App\Models\User;
+use App\Core\Config;
 use App\Models\VerificationToken;
+use App\Repositories\Token\TokenRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
 
-final class UserService
+class UserService
 {
-    public function __construct(private ?User $user = null)
+    public function __construct(
+        protected Config $config,
+        protected MailService $mailService,
+        protected UserRepositoryInterface $userRepo,
+        protected TokenRepositoryInterface $tokenRepo
+    )
     {
     }
-    
+
     public function register(string $email, string $password): User
     {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $username = "user" . mt_rand(100, 999);
 
-        $this->user = new User($username, $email, $passwordHash);
+        $user = new User($username, $email, $passwordHash);
 
-        $this->user->save();
+        $this->userRepo->save($user);
 
-        $this->sendVerificationLink();
+        $this->sendVerificationLink($user);
 
-        return $this->user;
+        return $user;
     }
 
-    public function sendVerificationLink()
+    public function sendVerificationLink(User $user)
     {
-        $userId = $this->user->getId();
-        $token = VerificationToken::getByUserId($userId);
+        $userId = $user->getId();
+        $token = $this->tokenRepo->getTokenByUserId($userId, VerificationToken::class);
 
         if ($token) {
-            $token->delete();
+            $this->tokenRepo->deleteToken($token);
         }
 
-        $config = Application::config();
         $token = new VerificationToken($userId);
-        $token->save();
-        $sender = new Addressee($config->mail['sender_email'], $config->mail['sender_name']);
-        $receiver = new Addressee($this->user->getEmail(), $this->user->getUsername());
+        $this->tokenRepo->saveToken($token);
+        $sender = new Addressee($this->config->mail['sender_email'], $this->config->mail['sender_name']);
+        $receiver = new Addressee($user->getEmail(), $user->getUsername());
         $mail = new VerificationMail("Email Verification")->useTemplate(["verification_link" => "http://localhost:9095/verify?token={$token->getRawToken()}"]);
-        return new MailService()->send($sender, $receiver, $mail);
+        return $this->mailService->send($sender, $receiver, $mail);
     }
 
-    public function forgotPassword(): bool
+    public function sendResetTokenLink(User $user): bool
     {
-        if (! $this->user) {
-            throw new \Exception("user instance is null");
-        }
-
-        $userId = $this->user->getId();
-        $token = ForgotPasswordToken::getByUserId($userId);
+        $userId = $user->getId();
+        $token = $this->tokenRepo->getTokenByUserId($userId, ForgotPasswordToken::class);
 
         if ($token) {
-            $token->delete();
+            $this->tokenRepo->deleteToken($token);
         }
 
-        $config = Application::config();
         $token = new ForgotPasswordToken($userId);
-        $token->save();
-        $sender = new Addressee($config->mail['sender_email'], $config->mail['sender_name']);
-        $receiver = new Addressee($this->user->getEmail(), $this->user->getUsername());
+        $this->tokenRepo->saveToken($token);
+        $sender = new Addressee($this->config->mail['sender_email'], $this->config->mail['sender_name']);
+        $receiver = new Addressee($user->getEmail(), $user->getUsername());
         $mail = new ResetPasswordMail("Reset Password Link")->useTemplate(["reset_link" => "http://localhost:9095/reset-password?token={$token->getRawToken()}"]);
-        $isSent = new MailService()->send($sender, $receiver, $mail);
-        return $isSent;
-    }
-
-    /**
-     * Check whether Verification or ForgotPassword token exists and is not expired
-     *
-     * @template T of AbstractToken
-     * @param string $rawToken The raw token string from the request
-     * @param class-string<T> $tokenClass The fully qualified class name of the token model (e.g., ForgotPasswordToken::class).
-     * @return bool
-     */
-    public function checkToken(string $rawToken, string $tokenClass): bool
-    {
-        /** @var T $tokenClass */
-        $tokenHash  = $tokenClass::generateTokenHash($rawToken);
-        $token = $tokenClass::getByTokenHash($tokenHash);
-
-        if (! $token) {
-            return false;
-        }
-
-        $isExpired = $token->isExpired();
-
-        if ($isExpired) {
-            $token->delete();
-        }
-
-        return ! $isExpired;
+        return $this->mailService->send($sender, $receiver, $mail);
     }
 
     public function verifyUser(string $token): ?User
     {
         $tokenHash = VerificationToken::generateTokenHash($token);
-        ["user" => $user, "token" => $token] = UserTokenAssociation::getByUserAndTokenHash($tokenHash, VerificationToken::class);
+
+        ["user" => $user, "token" => $token] = $this->tokenRepo->getUserAndToken($tokenHash, VerificationToken::class);
 
         if (! $user || ! $token || $token->isExpired()) {
             return null;
         }
 
-        $this->user = $user->update(["verified" => 1]);
-        $token->delete();
+        $user = $this->userRepo->verifyUser($user);
 
-        return $this->user;
+        $this->tokenRepo->deleteToken($token);
+
+        return $user;
+    }
+
+    public function validateVerificationToken(string $token): bool
+    {
+        return $this->tokenRepo->checkToken($token, VerificationToken::class);
+    }
+
+    public function validateForgotPasswordToken(string $token): bool
+    {
+        return $this->tokenRepo->checkToken($token, ForgotPasswordToken::class);
     }
 
     // what bool value means?
     public function resetPassword(string $token, string $newPassword): bool
     {
         $tokenHash = ForgotPasswordToken::generateTokenHash($token);
-        ["user" => $user, "token" => $token] = UserTokenAssociation::getByUserAndTokenHash($tokenHash, ForgotPasswordToken::class);
+        ["user" => $user, "token" => $token] = $this->tokenRepo->getUserAndToken($tokenHash, ForgotPasswordToken::class);
 
         if (! $user || ! $token || $token->isExpired()) {
             return false;
@@ -129,8 +112,9 @@ final class UserService
 
         $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-        if ($user->update(['password_hash' => $passwordHash])) {
-            $token->delete();
+
+        if ($this->userRepo->updatePassword($user, $passwordHash)) {
+            $this->tokenRepo->deleteToken($token);
             return true;
         }
 

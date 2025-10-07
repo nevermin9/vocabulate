@@ -58,22 +58,6 @@ abstract class AbstractToken extends AbstractModel
     }
 
     /**
-     * Retrieves a token by user ID.
-     */
-    public static function getByUserId(string $userId): ?static
-    {
-        return static::findOne(['user_id' => $userId]);
-    }
-
-    /**
-     * Retrieves a token by its hash.
-     */
-    public static function getByTokenHash(string $tokenHash): ?static
-    {
-        return static::findOne(['token_hash' => $tokenHash]);
-    }
-
-    /**
      * Saves the token and captures the generated ID.
      * Overrides parent to set the ID after insert.
      */
@@ -100,7 +84,7 @@ abstract class AbstractToken extends AbstractModel
             throw new \PDOException("Failed to save token to database.", 0);
         }
 
-        $this->id = (int)Application::db()->lastInsertId();
+        $this->id = (int)static::db()->lastInsertId();
 
         return true;
     }

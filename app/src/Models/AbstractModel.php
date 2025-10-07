@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Application;
+use App\Core\DB;
 
 abstract class AbstractModel
 {
@@ -42,12 +43,17 @@ abstract class AbstractModel
         return $columns;
     }
 
+    protected static function db(): DB
+    {
+        return Application::app()->container->get(DB::class);
+    }
+
     /**
      * Prepares an SQL statement using the application's database connection.
      */
     protected static function prepare(string $sql): \PDOStatement
     {
-        return Application::db()->prepare($sql);
+        return static::db()->prepare($sql);
     }
 
     /**

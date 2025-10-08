@@ -82,22 +82,22 @@ final class AuthController extends AbstractController
         ]);
     }
 
-    public function forgotPasswordSentView()
+    public function forgotPasswordSentView(): View
     {
         return $this->renderView("forgot-password-sent");
     }
 
-    public function resetPasswordInvalidView()
+    public function resetPasswordInvalidView(): View
     {
         return $this->renderView("reset-password-invalid");
     }
 
-    public function resetPasswordSuccessView()
+    public function resetPasswordSuccessView(): View
     {
         return $this->renderView("reset-password-success");
     }
 
-    public function login(Request $req)
+    public function login(Request $req): never
     {
         $loginForm = new LoginForm();
         $loginForm->load($req->data);
@@ -118,7 +118,7 @@ final class AuthController extends AbstractController
         die();
     }
 
-    public function register(Request $req)
+    public function register(Request $req): never
     {
         $regForm = new RegistrationForm();
         $regForm->load($req->data);
@@ -136,7 +136,7 @@ final class AuthController extends AbstractController
         die();
     }
 
-    public function forgotPassword(Request $req)
+    public function forgotPassword(Request $req): never
     {
         $forgotPassForm = new ForgotPasswordForm();
         $forgotPassForm->load($req->data);
@@ -159,7 +159,7 @@ final class AuthController extends AbstractController
         die();
     }
 
-    public function resetPassword(Request $req)
+    public function resetPassword(Request $req): never
     {
         $resetPassForm = new ResetPasswordForm();
         $resetPassForm->load($req->data);
@@ -181,7 +181,7 @@ final class AuthController extends AbstractController
         die();
     }
 
-    public function logout()
+    public function logout(): never
     {
         $this->auth->logout();
         redirect("/login");

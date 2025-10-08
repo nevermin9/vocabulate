@@ -5,7 +5,7 @@ namespace App\Traits;
 
 trait CSRFGuardTrait
 {
-    public function forbidAndExit()
+    public function forbidAndExit(): never
     {
         session_regenerate_id(true);
         http_response_code(403);

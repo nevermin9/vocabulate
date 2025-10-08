@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Attributes\Container;
 
-#[\Attribute]
+
+#[\Attribute(\Attribute::TARGET_CLASS)]
 class Singleton
 {}

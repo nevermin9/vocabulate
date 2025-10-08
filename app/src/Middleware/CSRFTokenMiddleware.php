@@ -18,7 +18,7 @@ class CSRFTokenMiddleware implements MiddlewareInterface
 
     public function handle(Request $req): mixed
     {
-        if ($req->method !== "POST") {
+        if (! $req->method->isPost()) {
             return null;
         }
 

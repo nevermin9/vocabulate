@@ -217,7 +217,7 @@ class Router
             return $middlewareResponse;
         }
 
-        $requestMethod = $req->method;
+        $requestMethod = $req->method->value;
         $routePath = $req->path;
 
         foreach ($this->routingMap[$requestMethod] ?? [] as $pattern => $routeData) {

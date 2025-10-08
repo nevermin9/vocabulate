@@ -4,29 +4,23 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Core\Request;
+use App\Core\Enums\HttpMethod;
 
 class RequestFactory
 {
-    const HTTP_METHODS_WITH_BODY = [
-        'POST',
-        'PUT',
-        'PATCH',
-    ];
-
     public static function createFromGlobals(): Request
     {
-        $method = strtoupper($_SERVER['REQUEST_METHOD']);
+        $method = HttpMethod::from(strtoupper($_SERVER['REQUEST_METHOD']));
         $headers = static::getAllHeaders();
         $uri = $_SERVER['REQUEST_URI'];
         $cookies = static::sanitize($_COOKIE, INPUT_COOKIE);
         $host = $_SERVER['HTTP_HOST'] ?? 'unknown';
         $path = explode("?", $uri)[0];
 
-        $isDataInBody = in_array($method, static::HTTP_METHODS_WITH_BODY); 
-        if ($isDataInBody && isset($headers['Content-Type']) && $headers['Content-Type'] === 'application/json') {
+        if ($method->hasBody() && isset($headers['Content-Type']) && $headers['Content-Type'] === 'application/json') {
             $json = file_get_contents('php://input');
             $data = (array) json_decode($json);
-        } elseif ($isDataInBody) {
+        } elseif ($method->hasBody()) {
             $data = static::sanitize($_POST, INPUT_POST);
         } else {
             $data = static::sanitize($_GET, INPUT_GET);
@@ -45,7 +39,7 @@ class RequestFactory
 
     public static function create(
         string $path = '/',
-        string $method = 'GET',
+        HttpMethod $method = HttpMethod::GET,
         string $uri = '/',
         array $data = [],
         string $host = 'localhost', 
@@ -55,7 +49,7 @@ class RequestFactory
     {
         return new Request(
             path: $path,
-            method: strtoupper($method),
+            method: $method,
             uri: $uri,
             data: $data,
             host: $host,

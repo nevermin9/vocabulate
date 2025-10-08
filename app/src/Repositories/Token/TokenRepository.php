@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace App\Repositories\Token;
 
 use App\Models\AbstractToken;
-use App\Models\ForgotPasswordToken;
-use App\Models\VerificationToken;
 use App\Core\DB;
 use App\Models\User;
 
@@ -52,7 +50,7 @@ class TokenRepository implements TokenRepositoryInterface
         $userColumns = implode(", ", array_map(static fn($c) => "u.{$c} AS user_{$c}", $userColumns));
         $tokenTableCols = implode(", ", array_map(static fn($c) => "t.{$c} AS token_{$c}", $tokenTableCols));
 
-        $stmt = $db->prepare(
+        $stmt = $this->db->prepare(
             "SELECT {$userColumns}, {$tokenTableCols}
             FROM users AS u
             INNER JOIN
@@ -86,7 +84,7 @@ class TokenRepository implements TokenRepositoryInterface
     public function checkToken(string $rawToken, string $tokenClass): bool
     {
         $tokenHash  = $tokenClass::generateTokenHash($rawToken);
-        $token = $this->getTokenByHash($rawToken, $tokenClass);
+        $token = $this->getTokenByHash($tokenHash, $tokenClass);
 
         if (! $token) {
             return false;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Application;
+use App\Core\DB;
 use App\Traits\UUIDTrait;
 
 class Stack
@@ -21,7 +22,7 @@ class Stack
 
     public function save(): Stack
     {
-        $db = Application::db();
+        $db = Application::app()->container->get(DB::class);
 
         $stmt = $db->prepare(
             "INSERT INTO stacks (user_id, name, language_code, created_at)
@@ -46,7 +47,7 @@ class Stack
 
     public static function get(int $id): ?Stack
     {
-        $db = Application::db();
+        $db = Application::app()->container->get(DB::class);
         $stmt = $db->prepare(
             "SELECT id,user_id,name,language_code,created_at
             FROM stacks
@@ -68,8 +69,7 @@ class Stack
 
     public static function getAll(string $userId): array
     {
-        $db = Application::db();
-
+        $db = Application::app()->container->get(DB::class);
         // join to show number of flashcards
         $stmt = $db->prepare(
             "SELECT id,name,language_code FROM stacks WHERE `user_id`=?"

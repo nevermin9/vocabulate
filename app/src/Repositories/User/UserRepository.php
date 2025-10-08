@@ -35,6 +35,6 @@ class UserRepository implements UserRepositoryInterface
 
     public function updatePassword(User $user, string $passwordHash): ?User
     {
-        $this->update($user, ["password_hash" => $passwordHash]);
+        return $this->update($user, ["password_hash" => $passwordHash]);
     }
 }

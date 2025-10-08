@@ -11,7 +11,7 @@ use App\Forms\ForgotPasswordForm;
 use App\Forms\LoginForm;
 use App\Forms\RegistrationForm;
 use App\Forms\ResetPasswordForm;
-use App\Models\User;
+use App\Repositories\User\UserRepository;
 use App\Services\AuthService;
 use App\Services\UserService;
 
@@ -21,6 +21,7 @@ final class AuthController extends AbstractController
         protected Session $session,
         protected AuthService $auth, 
         protected UserService $userService,
+        protected UserRepository $userRepository
     )
     {
         $this->setLayout('guest-view');
@@ -98,13 +99,12 @@ final class AuthController extends AbstractController
 
     public function login(Request $req)
     {
-        // TODO get rid of dep
         $loginForm = new LoginForm();
         $loginForm->load($req->data);
         $isValid = $loginForm->validate();
 
         if ($isValid) {
-            $user = User::findOne(["email" => $loginForm->email]);
+            $user = $this->userRepository->findByEmail($loginForm->email);
 
             if ($loginForm->validateUserPassword($user)) {
                 $this->auth->login($user);
@@ -143,7 +143,7 @@ final class AuthController extends AbstractController
         $isValid = $forgotPassForm->validate();
 
         if ($isValid) {
-            $user = User::findOne(["email" => $forgotPassForm->email]);
+            $user = $this->userRepository->findByEmail($forgotPassForm->email);
             if (! $user) {
                 redirect("/forgot-password/status");
                 die();

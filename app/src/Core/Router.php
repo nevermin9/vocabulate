@@ -5,6 +5,8 @@ namespace App\Core;
 
 use App\Attributes\Container\Singleton;
 use App\Exceptions\NotFoundException;
+use ReflectionAttribute;
+use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionMethod;
@@ -19,32 +21,8 @@ class Router
     /** @var class-string[] */
     private array $globalMiddleware = [];
 
-    public const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'];
-
     public function __construct(protected Container $container)
     {
-    }
-
-    /**
-     * Dynamically registers a route for a specific HTTP method.
-     */
-    public function __call(string $name, array $arguments): static
-    {
-        $httpMethod = strtoupper($name);
-        if (in_array($httpMethod, self::HTTP_METHODS, true)) {
-            [$route, $action, $middleware] = $arguments + [2 => []];
-            
-            if (!is_string($route) || (!is_callable($action) && !is_array($action) && !is_string($action))) {
-                throw new \InvalidArgumentException("Invalid route or action passed to {$name}() method.");
-            }
-            if (!is_array($middleware)) {
-                $middleware = [$middleware];
-            }
-            
-            return $this->register($httpMethod, $route, $action, $middleware);
-        }
-
-        throw new \BadMethodCallException("Method {$name} not supported.");
     }
 
     /**
@@ -74,6 +52,35 @@ class Router
     public function getGlobalMiddleware(): array
     {
         return $this->globalMiddleware;
+    }
+
+    public function registerControllers(array $controllers): static
+    {
+        foreach ($controllers as $controller) {
+            $reflection = new ReflectionClass($controller);
+            $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+
+            foreach ($methods as $method) {
+                $attributes = $method->getAttributes(Route::class, ReflectionAttribute::IS_INSTANCEOF);
+                if (! $attributes) {
+                    continue;
+                }
+
+                foreach ($attributes as $attr) {
+                    $instance = $attr->newInstance();
+                    $action = [$controller, $method->getName()];
+
+                    $this->register(
+                        $instance->method->value,
+                        $instance->path,
+                        $action,
+                        $instance->middleware
+                    );
+                }
+            }
+        }
+
+        return $this;
     }
 
     /**

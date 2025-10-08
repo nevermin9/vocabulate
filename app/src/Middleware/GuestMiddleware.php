@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
-use App\Core\Application;
 use App\Core\Interfaces\MiddlewareInterface;
 use App\Core\Request;
 use App\Services\AuthService;

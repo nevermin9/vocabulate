@@ -7,5 +7,9 @@ use App\Core\Request;
 
 interface MiddlewareInterface
 {
+    /**
+     * @param Request $req The current Request object.
+     * @return mixed A response object if middleware halts execution, or null to continue.
+     */
     public function handle(Request $req): mixed;
 }

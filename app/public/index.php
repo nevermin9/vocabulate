@@ -29,32 +29,43 @@ $container = new Container();
 $router = new Router($container);
 
 $router
-    ->registerGlobalMiddleware([CSRFTokenMiddleware::class])
+    ->registerControllers(
+        [
+            AuthController::class,
+            HomeController::class,
+            StackOverviewController::class,
+            VerificationController::class,
+        ]
+    )
+    ->registerGlobalMiddleware([CSRFTokenMiddleware::class]);
+
+// $router
+    // ->registerGlobalMiddleware([CSRFTokenMiddleware::class])
     // user's routes
-    ->get("/", [HomeController::class, "index"], [AuthMiddleware::class, VerificationMiddleware::class])
-    ->get("/stack/:id", [StackOverviewController::class, "index"], [AuthMiddleware::class, VerificationMiddleware::class])
-    ->post("/stack/create", [HomeController::class, "createStack"], [AuthMiddleware::class, VerificationMiddleware::class])
-    ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"], [AuthMiddleware::class, VerificationMiddleware::class])
-    ->get("/logout", [AuthController::class, "logout"], [AuthMiddleware::class])
-    ->get(VerificationMiddleware::getVerificationURL(), [VerificationController::class, "indexView"], [AuthMiddleware::class])
-    ->post("/verifiction/send", [VerificationController::class, "sendVerificationLink"], [AuthMiddleware::class])
-    ->get("/verify", [VerificationController::class, "verify"])
-    ->get("/verification/invalid", [VerificationController::class, "verificationInvalidView"])
-    ->get("/verification/success", [VerificationController::class, "verificationSuccessView"], [AuthMiddleware::class, VerificationMiddleware::class])
+    // ->get("/", [HomeController::class, "index"], [AuthMiddleware::class, VerificationMiddleware::class])
+    // ->get("/stack/:id", [StackOverviewController::class, "index"], [AuthMiddleware::class, VerificationMiddleware::class])
+    // ->post("/stack/create", [HomeController::class, "createStack"], [AuthMiddleware::class, VerificationMiddleware::class])
+    // ->post("/stack/:stackId/add-flashcard", [StackOverviewController::class, "addFleshcard"], [AuthMiddleware::class, VerificationMiddleware::class])
+    // ->get("/logout", [AuthController::class, "logout"], [AuthMiddleware::class])
+    // ->get(VerificationMiddleware::getVerificationURL(), [VerificationController::class, "indexView"], [AuthMiddleware::class])
+    // ->post("/verifiction/send", [VerificationController::class, "sendVerificationLink"], [AuthMiddleware::class])
+    // ->get("/verify", [VerificationController::class, "verify"])
+    // ->get("/verification/invalid", [VerificationController::class, "verificationInvalidView"])
+    // ->get("/verification/success", [VerificationController::class, "verificationSuccessView"], [AuthMiddleware::class, VerificationMiddleware::class])
 
     // anonymous's routes
-    ->get("/registration", [AuthController::class, "registrationView"], [GuestMiddleware::class])
-    ->post("/registration", [AuthController::class, "register"], [GuestMiddleware::class])
-    ->get("/login", [AuthController::class, "loginView"], [GuestMiddleware::class])
-    ->post("/login", [AuthController::class, "login"], [GuestMiddleware::class])
-    ->get("/forgot-password", [AuthController::class, "forgotPasswordView"], [GuestMiddleware::class])
-    ->post("/forgot-password", [AuthController::class, "forgotPassword"], [GuestMiddleware::class])
-    ->get("/reset-password", [AuthController::class, "resetPasswordView"], [GuestMiddleware::class])
-    ->post("/reset-password", [AuthController::class, "resetPassword"], [GuestMiddleware::class])
-    ->get("/forgot-password/status", [AuthController::class, "forgotPasswordSentView"], [GuestMiddleware::class])
-    ->get("/reset-password/invalid", [AuthController::class, "resetPasswordInvalidView"], [GuestMiddleware::class])
-    ->get("/reset-password/success", [AuthController::class, "resetPasswordSuccessView"], [GuestMiddleware::class])
-;
+    // ->get("/registration", [AuthController::class, "registrationView"], [GuestMiddleware::class])
+    // ->post("/registration", [AuthController::class, "register"], [GuestMiddleware::class])
+    // ->get("/login", [AuthController::class, "loginView"], [GuestMiddleware::class])
+    // ->post("/login", [AuthController::class, "login"], [GuestMiddleware::class])
+    // ->get("/forgot-password", [AuthController::class, "forgotPasswordView"], [GuestMiddleware::class])
+    // ->post("/forgot-password", [AuthController::class, "forgotPassword"], [GuestMiddleware::class])
+    // ->get("/reset-password", [AuthController::class, "resetPasswordView"], [GuestMiddleware::class])
+    // ->post("/reset-password", [AuthController::class, "resetPassword"], [GuestMiddleware::class])
+    // ->get("/forgot-password/status", [AuthController::class, "forgotPasswordSentView"], [GuestMiddleware::class])
+    // ->get("/reset-password/invalid", [AuthController::class, "resetPasswordInvalidView"], [GuestMiddleware::class])
+    // ->get("/reset-password/success", [AuthController::class, "resetPasswordSuccessView"], [GuestMiddleware::class])
+// ;
 
 
 new Application($container, $router, new Config($_ENV))->run();

@@ -23,10 +23,7 @@ class CSRFTokenMiddleware implements MiddlewareInterface
         }
 
         if (empty($req->data['csrf_token']) || ! $this->auth->checkCSRF($req->data['csrf_token'])) {
-            var_dump($req);
-            var_dump($this->auth->getCSRF());
-            exit();
-            // $this->forbidAndExit();
+            $this->forbidAndExit();
         } 
 
         return null;

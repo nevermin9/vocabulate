@@ -15,7 +15,7 @@ class VerificationMiddleware implements MiddlewareInterface
 
     public static function getVerificationURL(): string
     {
-        return "/verification-pending";
+        return "/verification/pending";
     }
 
     public function handle(Request $req): mixed

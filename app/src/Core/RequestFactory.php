@@ -39,7 +39,7 @@ class RequestFactory
 
     public static function create(
         string $path = '/',
-        HttpMethod $method = HttpMethod::GET,
+        HttpMethod|string $method = HttpMethod::GET,
         string $uri = '/',
         array $data = [],
         string $host = 'localhost', 
@@ -47,6 +47,10 @@ class RequestFactory
         array $cookies = [],
     ): Request
     {
+        if (is_string($method)) {
+            $method = HttpMethod::from($method);
+        }
+
         return new Request(
             path: $path,
             method: $method,

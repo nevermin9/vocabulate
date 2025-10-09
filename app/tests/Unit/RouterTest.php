@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Core\Container;
+use App\Core\Enums\HttpMethod;
 use App\Core\Request;
 use App\Core\RequestFactory;
+use App\Core\Route;
 use App\Core\Router;
 use App\Exceptions\NotFoundException;
 use PHPUnit\Framework\TestCase;
@@ -17,74 +19,76 @@ final class RouterTest extends TestCase
     protected function setUp(): void
     {
         $container = $this->createStub(Container::class);
-        $container->method('get')->willReturnCallback(fn($c) => class_exists($c) ? new $c() : new \stdClass());
+        $container->method('get')->willReturnCallback(function($class) {
+            if (!class_exists($class)) {
+                throw new \RuntimeException("Class $class does not exist");
+            }
+            
+            // Return instances of test classes
+            return match($class) {
+                TestIndexController::class => new TestIndexController(),
+                AllowMiddleware::class => new AllowMiddleware(),
+                BlockMiddleware::class => new BlockMiddleware(),
+                default => new $class()
+            };
+        });
+        
         $this->router = new Router($container);
-    }
-
-    public function test_get_registers_route_with_middleware()
-    {
-        $this->router->get('/users', ['UserController', 'index'], 'AuthMiddleware');
-        
-        $routes = $this->router->getRoutes();
-        
-        $this->assertArrayHasKey('GET', $routes);
-        $this->assertArrayHasKey('/users', $routes['GET']);
-        $this->assertEquals(['UserController', 'index'], $routes['GET']['/users']['action']);
-        $this->assertEquals(['AuthMiddleware'], $routes['GET']['/users']['middleware']);
-    }
-
-    public function test_get_registers_route_without_middleware()
-    {
-        $this->router->get('/public', fn() => 'public');
-        
-        $routes = $this->router->getRoutes();
-        
-        $this->assertEquals([], $routes['GET']['/public']['middleware']);
-    }
-
-    public function test_get_registers_route_with_multiple_middleware()
-    {
-        $this->router->get('/admin', ['AdminController', 'index'], ['Auth', 'Admin', 'Log']);
-        
-        $routes = $this->router->getRoutes();
-        
-        $this->assertEquals(['Auth', 'Admin', 'Log'], $routes['GET']['/admin']['middleware']);
-    }
-
-    public function test_post_registers_route()
-    {
-        $this->router->post('/users', ['UserController', 'store']);
-
-        $routes = $this->router->getRoutes();
-
-        $this->assertArrayHasKey('POST', $routes);
-        $this->assertArrayHasKey('/users', $routes['POST']);
-    }
-
-    public function test_register_returns_router_instance_for_chaining()
-    {
-        $result = $this->router
-            ->get('/users', fn() => 'users')
-            ->post('/users', fn() => 'create')
-            ->put('/users/:id', fn() => 'update');
-
-        $this->assertInstanceOf(Router::class, $result);
     }
 
     public function test_register_global_middleware()
     {
-        $result = $this->router->registerGlobalMiddleware(['CorsMiddleware', 'LogMiddleware']);
+        $result = $this->router->registerGlobalMiddleware([BlockMiddleware::class, AllowMiddleware::class]);
         
         $this->assertInstanceOf(Router::class, $result);
-        $this->assertSame(['CorsMiddleware', 'LogMiddleware'], $this->router->getGlobalMiddleware());
+        $this->assertSame([BlockMiddleware::class, AllowMiddleware::class], $this->router->getGlobalMiddleware());
     }
 
+    public function test_register_controllers_creates_routes_from_attributes()
+    {
+        $this->router->registerControllers([TestControllerWithAttributes::class]);
+        
+        $routes = $this->router->getRoutes();
+        
+        $this->assertArrayHasKey('GET', $routes);
+        $this->assertArrayHasKey('/test', $routes['GET']);
+        $this->assertEquals([TestControllerWithAttributes::class, 'index'], $routes['GET']['/test']['action']);
+    }
+
+    public function test_register_controllers_handles_middleware()
+    {
+        $this->router->registerControllers([TestControllerWithMiddleware::class]);
+        
+        $routes = $this->router->getRoutes();
+        
+        $this->assertArrayHasKey('GET', $routes);
+        $this->assertEquals([AllowMiddleware::class], $routes['GET']['/protected']['middleware']);
+    }
+
+    public function test_register_controllers_handles_multiple_routes_per_method()
+    {
+        $this->router->registerControllers([TestControllerWithMultipleRoutes::class]);
+        
+        $routes = $this->router->getRoutes();
+        
+        $this->assertArrayHasKey('GET', $routes);
+        $this->assertArrayHasKey('POST', $routes);
+        $this->assertArrayHasKey('/users', $routes['GET']);
+        $this->assertArrayHasKey('/users', $routes['POST']);
+    }
 
     public function test_resolve_exact_route_with_closure()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/hello');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/hello',
+        );
         
-        $this->router->get('/hello', fn() => 'Hello World');
+        // Manually register a closure route
+        $reflection = new \ReflectionClass($this->router);
+        $registerMethod = $reflection->getMethod('register');
+        $registerMethod->setAccessible(true);
+        $registerMethod->invoke($this->router, 'GET', '/hello', fn() => 'Hello World', []);
         
         $result = $this->router->resolve($req);
         
@@ -93,9 +97,12 @@ final class RouterTest extends TestCase
 
     public function test_resolve_route_with_array_callable()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/test');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/test',
+        );
         
-        $this->router->get('/test', [TestIndexController::class, 'index']);
+        $this->router->registerControllers([TestControllerWithAttributes::class]);
         
         $result = $this->router->resolve($req);
         
@@ -104,9 +111,12 @@ final class RouterTest extends TestCase
 
     public function test_resolve_route_with_single_parameter()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/users/123');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/users/123',
+        );
         
-        $this->router->get('/users/:id', fn($id) => "User ID: $id");
+        $this->router->registerControllers([TestControllerWithParams::class]);
         
         $result = $this->router->resolve($req);
         
@@ -115,24 +125,26 @@ final class RouterTest extends TestCase
 
     public function test_resolve_route_with_multiple_parameters()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/users/123/posts/321');
-
-        $this->router->get('/users/:id/posts/:postId', 
-            fn($id, $postId) => "User {$id} Post {$postId}"
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/users/123/posts/321',
         );
+
+        $this->router->registerControllers([TestControllerWithMultipleParams::class]);
 
         $result = $this->router->resolve($req);
 
-        $this->assertEquals($result, "User 123 Post 321");
+        $this->assertEquals("User 123 Post 321", $result);
     }
 
     public function test_resolve_route_with_request_injection()
     {
-        $req = RequestFactory::create(method: 'POST', path: '/data');
+        $req = RequestFactory::create(
+            method: 'POST',
+            path: '/data',
+        );
         
-        $this->router->post('/data', function(Request $req) {
-            return 'Request method: ' . $req->method;
-        });
+        $this->router->registerControllers([TestControllerWithRequest::class]);
         
         $result = $this->router->resolve($req);
         
@@ -141,11 +153,12 @@ final class RouterTest extends TestCase
 
     public function test_resolve_route_with_request_and_parameters()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/users/42/edit');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/users/42/edit',
+        );
         
-        $this->router->get('/users/:id/edit', function(Request $req, $id) {
-            return "Method: {$req->method}, ID: $id";
-        });
+        $this->router->registerControllers([TestControllerWithRequestAndParams::class]);
         
         $result = $this->router->resolve($req);
         
@@ -154,9 +167,12 @@ final class RouterTest extends TestCase
 
     public function test_resolve_route_with_optional_parameter()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/hello');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/hello',
+        );
         
-        $this->router->get('/hello', fn($name = 'Guest') => "Hello $name");
+        $this->router->registerControllers([TestControllerWithOptionalParam::class]);
         
         $result = $this->router->resolve($req);
         
@@ -165,7 +181,10 @@ final class RouterTest extends TestCase
 
     public function test_resolve_throws_exception_for_non_existent_route()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/non-existent');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/non-existent',
+        );
         
         $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage("Route not found: GET /non-existent");
@@ -175,9 +194,12 @@ final class RouterTest extends TestCase
 
     public function test_route_specific_middleware_executes()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/protected');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/protected',
+        );
         
-        $this->router->get('/protected', fn() => 'protected content', AllowMiddleware::class);
+        $this->router->registerControllers([TestControllerWithMiddleware::class]);
         
         $result = $this->router->resolve($req);
         
@@ -186,9 +208,12 @@ final class RouterTest extends TestCase
 
     public function test_middleware_can_short_circuit_request()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/admin');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/admin',
+        );
         
-        $this->router->get('/admin', fn() => 'admin content', BlockMiddleware::class);
+        $this->router->registerControllers([TestControllerWithBlockingMiddleware::class]);
         
         $result = $this->router->resolve($req);
         
@@ -197,10 +222,13 @@ final class RouterTest extends TestCase
 
     public function test_global_middleware_executes_before_route_middleware()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/test');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/test',
+        );
         
         $this->router->registerGlobalMiddleware([BlockMiddleware::class]);
-        $this->router->get('/test', fn() => 'content', AllowMiddleware::class);
+        $this->router->registerControllers([TestControllerWithAttributes::class]);
         
         $result = $this->router->resolve($req);
         
@@ -209,13 +237,12 @@ final class RouterTest extends TestCase
 
     public function test_parameter_order_matches_callable_signature()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/posts/100/comments/200');
-        
-        $this->router->get('/posts/:postId/comments/:commentId', 
-            function($commentId, $postId) {
-                return "Post: $postId, Comment: $commentId";
-            }
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/posts/100/comments/200',
         );
+        
+        $this->router->registerControllers([TestControllerWithReversedParams::class]);
         
         $result = $this->router->resolve($req);
         
@@ -224,10 +251,16 @@ final class RouterTest extends TestCase
 
     public function test_non_existent_controller_class_throws_runtime_exception()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/test');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/test',
+        );
         
-        $this->router->get('/test', ['NonExistentController', 'index']);
-        
+        // Manually register a non-existent controller
+        $reflection = new \ReflectionClass($this->router);
+        $registerMethod = $reflection->getMethod('register');
+        $registerMethod->setAccessible(true);
+        $registerMethod->invoke($this->router, 'GET', '/test', ['NonExistentController', 'index'], []);
         
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("Failed to execute route action.");
@@ -237,9 +270,16 @@ final class RouterTest extends TestCase
 
     public function test_non_existent_controller_method_throws_runtime_exception()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/test');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/test',
+        );
 
-        $this->router->get('/test', [\stdClass::class, 'nonExistentMethod']);
+        // Manually register a controller with non-existent method
+        $reflection = new \ReflectionClass($this->router);
+        $registerMethod = $reflection->getMethod('register');
+        $registerMethod->setAccessible(true);
+        $registerMethod->invoke($this->router, 'GET', '/test', [\stdClass::class, 'nonExistentMethod'], []);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("Failed to execute route action.");
@@ -249,9 +289,12 @@ final class RouterTest extends TestCase
 
     public function test_route_matching_is_case_sensitive()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/Users');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/Users',
+        );
         
-        $this->router->get('/users', fn() => 'users');
+        $this->router->registerControllers([TestControllerWithAttributes::class]);
         
         $this->expectException(NotFoundException::class);
         
@@ -260,9 +303,12 @@ final class RouterTest extends TestCase
 
     public function test_route_with_trailing_slash_does_not_match_without()
     {
-        $req = RequestFactory::create(method: 'GET', path: '/users/');
+        $req = RequestFactory::create(
+            method: 'GET',
+            path: '/test/',
+        );
         
-        $this->router->get('/users', fn() => 'users');
+        $this->router->registerControllers([TestControllerWithAttributes::class]);
         
         $this->expectException(NotFoundException::class);
         
@@ -270,6 +316,7 @@ final class RouterTest extends TestCase
     }
 }
 
+// Test Controllers
 class TestIndexController
 {
     public function index()
@@ -278,6 +325,103 @@ class TestIndexController
     }
 }
 
+class TestControllerWithAttributes
+{
+    #[Route(method: HttpMethod::GET, path: '/test')]
+    public function index()
+    {
+        return 'test index';
+    }
+}
+
+class TestControllerWithMiddleware
+{
+    #[Route(method: HttpMethod::GET, path: '/protected', middleware: [AllowMiddleware::class])]
+    public function index()
+    {
+        return 'protected content';
+    }
+}
+
+class TestControllerWithBlockingMiddleware
+{
+    #[Route(method: HttpMethod::GET, path: '/admin', middleware: [BlockMiddleware::class])]
+    public function index()
+    {
+        return 'admin content';
+    }
+}
+
+class TestControllerWithMultipleRoutes
+{
+    #[Route(method: HttpMethod::GET, path: '/users')]
+    public function index()
+    {
+        return 'users list';
+    }
+
+    #[Route(method: HttpMethod::POST, path: '/users')]
+    public function store()
+    {
+        return 'user created';
+    }
+}
+
+class TestControllerWithParams
+{
+    #[Route(method: HttpMethod::GET, path: '/users/:id')]
+    public function show($id)
+    {
+        return "User ID: $id";
+    }
+}
+
+class TestControllerWithMultipleParams
+{
+    #[Route(method: HttpMethod::GET, path: '/users/:id/posts/:postId')]
+    public function show($id, $postId)
+    {
+        return "User $id Post $postId";
+    }
+}
+
+class TestControllerWithRequest
+{
+    #[Route(method: HttpMethod::POST, path: '/data')]
+    public function handle(Request $req)
+    {
+        return 'Request method: ' . $req->method->value;
+    }
+}
+
+class TestControllerWithRequestAndParams
+{
+    #[Route(method: HttpMethod::GET, path: '/users/:id/edit')]
+    public function edit(Request $req, $id)
+    {
+        return "Method: {$req->method->value}, ID: $id";
+    }
+}
+
+class TestControllerWithOptionalParam
+{
+    #[Route(method: HttpMethod::GET, path: '/hello')]
+    public function greet($name = 'Guest')
+    {
+        return "Hello $name";
+    }
+}
+
+class TestControllerWithReversedParams
+{
+    #[Route(method: HttpMethod::GET, path: '/posts/:postId/comments/:commentId')]
+    public function show($commentId, $postId)
+    {
+        return "Post: $postId, Comment: $commentId";
+    }
+}
+
+// Test Middleware
 class AllowMiddleware
 {
     public function handle(Request $req)

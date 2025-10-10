@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Core\Application;
 use App\Core\DB;
+use App\Database\Enums\Order;
 
 abstract class AbstractModel
 {
@@ -105,6 +106,48 @@ abstract class AbstractModel
         
         $data = $stmt->fetch();
         return $data ? static::fromDatabase($data) : null;
+    }
+
+    /**
+     * Finds multiple model instances based on an optional WHERE clause.
+     * If $where is empty, it returns all records in the table.
+     *
+     * @param array $where e.g., ['status' => 'active', 'user_id' => 5]
+     * @param array{order: Order, orderBy: string} $options
+     * @return static[]
+     */
+    public static function findMany(array $where = [], array $options = []): array
+    {
+        $tableName = static::getTableName();
+        $sql = '';
+        $columns = []; // Columns used for the WHERE clause
+
+        if (!empty($where)) {
+            $columns = array_intersect(array_keys($where), static::getColumns());
+
+            if (empty($columns)) {
+                return [];
+            }
+
+            $sql = " WHERE " . implode(" AND ", array_map(static fn($c) => "{$c} = :{$c}", $columns));
+        }
+
+        if ($options['orderBy'] && $options['order'] instanceof Order && in_array($options['orderBy'], static::getColumns())) {
+            $sql .= "ORDER BY {$options['orderBy']} {$options['order']->value}";
+        }
+
+        $fullSql = "SELECT * FROM {$tableName}{$sql}";
+        $stmt = static::prepare($fullSql);
+
+        foreach ($columns as $col) {
+            $stmt->bindValue(":{$col}", $where[$col]);
+        }
+
+        $stmt->execute();
+
+        $results = $stmt->fetchAll();
+
+        return array_map(static fn(array $data) => static::fromDatabase($data), $results);
     }
 
     /**

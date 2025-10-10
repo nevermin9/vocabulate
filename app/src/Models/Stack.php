@@ -5,82 +5,46 @@ namespace App\Models;
 
 use App\Core\Application;
 use App\Core\DB;
-use App\Traits\UUIDTrait;
 
-class Stack
+class Stack extends AbstractModel
 {
-    protected ?int $id;
-    protected ?string $createdAt;
+    protected int $id;
+    protected string $user_id;
+    protected string $name;
+    protected string $language_code;
+    protected string $created_at;
 
     public function __construct(
-        protected string $userId,
-        protected string $name,
-        protected string $langCode
+        string $userId,
+        string $name,
+        string $langCode,
     )
     {
+        $this->user_id = $userId;
+        $this->name = $name;
+        $this->language_code = $langCode;
     }
 
-    public function save(): Stack
+    public static function getTableName(): string
     {
-        $db = Application::app()->container->get(DB::class);
-
-        $stmt = $db->prepare(
-            "INSERT INTO stacks (user_id, name, language_code, created_at)
-            VALUES (:user_id, :name, :language_code, NOW())"
-        );
-
-        $ok = $stmt->execute([
-            "user_id" => $this->userId,
-            "name" => $this->name,
-            "language_code" => $this->langCode
-        ]);
-
-        if ($ok) {
-            $this->id = (int) $db->lastInsertId();
-            $stmt = $db->prepare("SELECT created_at FROM stacks WHERE id = :id");
-            $stmt->execute(["id" => $this->id]);
-            $this->createdAt = $stmt->fetchColumn();
-        }
-
-        return $this;
+        return "stacks";
     }
 
-    public static function get(int $id): ?Stack
+    public static function getColumns(): array
     {
-        $db = Application::app()->container->get(DB::class);
-        $stmt = $db->prepare(
-            "SELECT id,user_id,name,language_code,created_at
-            FROM stacks
-            WHERE id = :id"
-        );
-        $ok = $stmt->execute(["id" => $id]);
+        return ["id", "user_id", "name", "language_code", "created_at"];
+    }
 
-        if (! $ok) {
-            return null;
-        }
-
-        $data = $stmt->fetch();
-        $stack = new Stack($data['user_id'], $data['name'], $data['language_code']);
-        $stack->id = (int) $data['id'];
-        $stack->createdAt = $data['created_at'];
-
+    public static function fromDatabase(array $data): static
+    {
+        $stack = new static($data['user_id'], $data['name'], $data['language_code']);
+        $stack->id = $data['id'];
+        $stack->created_at = $data['created_at'];
         return $stack;
     }
 
-    public static function getAll(string $userId): array
+    public function getId(): int
     {
-        $db = Application::app()->container->get(DB::class);
-        // join to show number of flashcards
-        $stmt = $db->prepare(
-            "SELECT id,name,language_code FROM stacks WHERE `user_id`=?"
-        );
-
-        $ok = $stmt->execute([$userId]);
-
-        if ($ok) {
-            return $stmt->fetchAll();
-        }
-
-        return [];
+        return $this->id;
     }
 }

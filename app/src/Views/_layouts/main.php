@@ -18,8 +18,21 @@
     <body>
         <?php require dirname(__DIR__) . "/_parts/app-overlay.php"; ?>
 
-        <header>
-            <div>
+        <header class="app-header">
+            <div class="app-header__inner">
+                <a
+                    class="app-link" 
+                    href="/"
+                >
+                    Back
+                </a>
+
+                <button 
+                    class="app-link  app-link--btn"
+                    type="button"
+                >
+                    Edit
+                </button>
             </div>
         </header>
 

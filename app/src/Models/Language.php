@@ -9,8 +9,8 @@ use App\Core\DB;
 class Language extends AbstractModel
 {
     public function __construct(
-        protected string $code,
-        protected string $name
+        public readonly string $code,
+        public readonly string $name
     )
     {
     }

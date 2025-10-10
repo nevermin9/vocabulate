@@ -16,6 +16,6 @@ abstract class AbstractController
 
     protected function renderView(string $templateName, array $params = []): View
     {
-        return View::make($templateName, $params, $this->layout);
+        return View::make($templateName, $this->layout, $params);
     }  
 }

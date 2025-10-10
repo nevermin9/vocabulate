@@ -120,7 +120,7 @@ abstract class AbstractModel
     {
         $tableName = static::getTableName();
         $sql = '';
-        $columns = []; // Columns used for the WHERE clause
+        $columns = [];
 
         if (!empty($where)) {
             $columns = array_intersect(array_keys($where), static::getColumns());

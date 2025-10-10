@@ -1,8 +1,4 @@
 <main>
-    <h1>
-        Welcome to Vocabulate
-    </h1>
-
     <ul class="stack-list">
         <li>
             <div class="stack">
@@ -54,8 +50,8 @@
                             selected
                         >Please, select language</option>
                         <?php foreach ($this->params['languages'] as $i => $lang): ?>
-                        <option value="<?php echo htmlspecialchars($lang['code']) ?>">
-                            <?php echo htmlspecialchars($lang['name']) ?>
+                        <option value="<?php echo htmlspecialchars($lang->code) ?>">
+                            <?php echo htmlspecialchars($lang->name) ?>
                         </option>
                         <?php endforeach; ?>
                     </select>

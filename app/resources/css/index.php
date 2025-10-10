@@ -6,6 +6,7 @@ require "app-link.css";
 require "app-checkbox.css";
 require "app-overlay.css";
 require "app-field.css";
+require "app-header.css";
 require "theme-switcher.css";
 require "icon.css";
 require "auth-box.css";

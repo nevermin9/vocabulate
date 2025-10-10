@@ -9,15 +9,15 @@ final class View
 
     public function __construct(
         private string $view,
+        private string $layout,
         private array $params = [],
-        private string $layout = 'main',
     )
     {
     }
 
-    public static function make(string $view, array $params = [], string $layout = 'main'): static
+    public static function make(string $view, string $layout, array $params = []): static
     {
-        return new static($view, $params, $layout);
+        return new static($view, $layout, $params);
     }
 
     private function render(): string

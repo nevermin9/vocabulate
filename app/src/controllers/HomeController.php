@@ -3,19 +3,18 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\AbstractController;
 use App\Core\View;
 use App\Core\Enums\HttpMethod;
 use App\Core\Request;
 use App\Core\Route;
-use App\Models\Language;
 use App\Services\AuthService;
-use App\Services\StackService;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\VerificationMiddleware;
 use App\Repositories\Language\LanguageRepositoryInterface;
 use App\Repositories\Stack\StackRepositoryInterface;
 
-class HomeController
+class HomeController extends AbstractController
 {
     public function __construct(
         protected AuthService $auth,
@@ -31,7 +30,7 @@ class HomeController
         $langs = $this->langRepo->getAllAsc();
         $stacks = $this->stackRepo->getAllAsc($this->auth->getUserId());
 
-        return View::make("index", [
+        return $this->renderView("index", [
             "stacks" => $stacks,
             "languages" => $langs
         ]);

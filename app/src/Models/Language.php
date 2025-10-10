@@ -6,19 +6,27 @@ namespace App\Models;
 use App\Core\Application;
 use App\Core\DB;
 
-final class Language
+class Language extends AbstractModel
 {
-    public static function getAll(): array
+    public function __construct(
+        protected string $code,
+        protected string $name
+    )
     {
-        $db = Application::app()->container->get(DB::class);
+    }
 
-        $stmt = $db->prepare("SELECT code, name FROM languages ORDER BY name;");
+    public static function fromDatabase(array $data): static
+    {
+        return new static($data['code'], $data['name']);
+    }
 
-        $ok = $stmt->execute();
+    public static function getTableName(): string
+    {
+        return 'languages';
+    }
 
-        if ($ok) {
-            return $stmt->fetchAll();
-        }
-        return [];
+    public static function getColumns(): array
+    {
+        return ['code', 'name'];
     }
 }

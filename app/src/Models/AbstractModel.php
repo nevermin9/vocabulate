@@ -133,7 +133,7 @@ abstract class AbstractModel
         }
 
         if ($options['orderBy'] && $options['order'] instanceof Order && in_array($options['orderBy'], static::getColumns())) {
-            $sql .= "ORDER BY {$options['orderBy']} {$options['order']->value}";
+            $sql .= " ORDER BY {$options['orderBy']} {$options['order']->value}";
         }
 
         $fullSql = "SELECT * FROM {$tableName}{$sql}";

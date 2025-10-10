@@ -4,21 +4,23 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\View;
-use App\Core\Application;
 use App\Core\Enums\HttpMethod;
 use App\Core\Request;
 use App\Core\Route;
 use App\Models\Language;
-use App\Models\Stack;
 use App\Services\AuthService;
 use App\Services\StackService;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\VerificationMiddleware;
+use App\Repositories\Language\LanguageRepositoryInterface;
+use App\Repositories\Stack\StackRepositoryInterface;
 
 class HomeController
 {
     public function __construct(
-        protected AuthService $auth
+        protected AuthService $auth,
+        protected StackRepositoryInterface $stackRepo,
+        protected LanguageRepositoryInterface $langRepo
     )
     {
     }
@@ -26,8 +28,8 @@ class HomeController
     #[Route(method: HttpMethod::GET, path: "/", middleware: [AuthMiddleware::class, VerificationMiddleware::class])]
     public function index(): View
     {
-        $stacks = Stack::getAll($this->auth->getUserId());
-        $langs = Language::getAll();
+        $langs = $this->langRepo->getAllAsc();
+        $stacks = $this->stackRepo->getAllAsc($this->auth->getUserId());
 
         return View::make("index", [
             "stacks" => $stacks,

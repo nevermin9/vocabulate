@@ -22,7 +22,7 @@ final class LoginForm extends AbstractForm
 
     public function validateUserPassword(?User $user): bool
     {
-        if (! $user || ! password_verify($this->password, $user->getPasswordHash())) {
+        if (! $user || ! password_verify($this->password, $user->passwordHash)) {
             $this->addError('credentials', static::INVALID_CRED_ERROR);
             return false;
         }

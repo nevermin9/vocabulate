@@ -8,11 +8,11 @@ use App\Core\DB;
 
 class Stack extends AbstractModel
 {
-    protected int $id;
-    protected string $user_id;
-    protected string $name;
-    protected string $language_code;
-    protected string $created_at;
+    public readonly int $id;
+    public readonly string $user_id;
+    public readonly string $name;
+    public readonly string $language_code;
+    public readonly string $created_at;
 
     public function __construct(
         string $userId,
@@ -41,10 +41,5 @@ class Stack extends AbstractModel
         $stack->id = $data['id'];
         $stack->created_at = $data['created_at'];
         return $stack;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 }

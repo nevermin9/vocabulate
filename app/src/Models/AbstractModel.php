@@ -33,13 +33,23 @@ abstract class AbstractModel
      * Returns columns that should be included in INSERT statements.
      * By default, excludes the primary key for auto-increment models.
      */
-    protected static function getColumnsForInsert(): array
+    protected static function getColumnsForInsert(AbstractModel $model): array
     {
         $columns = static::getColumns();
         
         if (static::usesAutoIncrementPrimaryKey()) {
             return array_values(array_filter($columns, fn($col) => $col !== static::primaryKey()));
         }
+
+        $columns = array_filter($columns, function ($col) use ($model) {
+            if (! property_exists($model, $col)) {
+                return false;
+            }
+            if (isset($model->{$col})) {
+                return true;
+            }
+            return isset($model->{$col});
+        });
         
         return $columns;
     }
@@ -59,12 +69,12 @@ abstract class AbstractModel
 
     /**
      * Persists the current model object to the database using an INSERT statement.
-     * @return bool True on successful execution.
+     * @return ?AbstractModel 
      */
-    public function save(): bool
+    public function save(): ?AbstractModel
     {
         $tableName = static::getTableName();
-        $columns = static::getColumnsForInsert();
+        $columns = static::getColumnsForInsert($this);
         
         $placeholders = array_map(static fn($c) => ":{$c}", $columns);
         $stmt = static::prepare(
@@ -72,13 +82,34 @@ abstract class AbstractModel
             VALUES (" . implode(", ", $placeholders) . ");"
         );
         
-        // Bind values from object properties
         foreach ($columns as $col) {
-            // Note: $this->$col is safe because properties are protected and named correctly
-            $stmt->bindValue(":{$col}", $this->$col);
+            $stmt->bindValue(":{$col}", $this->{$col});
+        }
+
+        if (! $stmt->execute()) {
+            return null;
+
         }
         
-        return $stmt->execute();
+        $primaryKey = static::primaryKey();
+        if (static::usesAutoIncrementPrimaryKey()) {
+            $primaryValue = static::db()->lastInsertId();
+        } else {
+            $primaryValue = $this->{$primaryKey};
+        }
+
+        $stmt = static::prepare(
+            "SELECT * FROM {$tableName} WHERE `{$primaryKey}` = :id"
+        );
+        $stmt->bindValue(":id", $primaryValue);
+
+        if ($stmt->execute()) {
+            return null;
+        }
+
+        $data = $stmt->fetch();
+
+        return static::fromDatabase($data);
     }
 
     /**

@@ -14,12 +14,24 @@ class AuthService
     private const CSRF_TOKEN_KEY = "csrf_token";
     private ?User $user = null;
 
+    public string $userId {
+        get {
+            return $this->session->get(static::USER_KEY);
+        }
+    }
+
+    public ?string $csrfToken {
+        get {
+            return $this->session->get(static::CSRF_TOKEN_KEY);
+        }
+    }
+
     public function __construct(private Session $session)
     {
         $this->generateCSRF();
         
         if ($this->isAuthenticated()) {
-            $this->user = User::findOne([User::primaryKey() => $this->getUserId()]);
+            $this->user = User::findOne([User::primaryKey() => $this->userId]);
             
             if ($this->user === null) {
                 $this->logout();
@@ -40,7 +52,7 @@ class AuthService
     public function login(User $user): void
     {
         $this->session->restart();
-        $this->session->set(static::USER_KEY, $user->getIdString());
+        $this->session->set(static::USER_KEY, $user->idString);
         $this->user = $user;
     }
 
@@ -50,25 +62,13 @@ class AuthService
         $this->user = null;
     }
 
-    public function getUserId(): ?string
-    {
-        return $this->session->get(static::USER_KEY);
-    }
-
-    public function getCSRF(): string
-    {
-        return $this->session->get(static::CSRF_TOKEN_KEY);
-    }
-
     public function checkCSRF(string $userToken): bool
     {
-        $sessionToken = $this->session->get(static::CSRF_TOKEN_KEY);
-        
-        if ($sessionToken === null) {
+        if ($this->csrfToken === null) {
             return false;
         }
         
-        return hash_equals($sessionToken, $userToken);
+        return hash_equals($this->csrfToken, $userToken);
     }
 
     public function unsetCSRF(): void
@@ -82,7 +82,7 @@ class AuthService
      */
     private function generateCSRF(): void
     {
-        if (empty($this->session->get(static::CSRF_TOKEN_KEY))) {
+        if (empty($this->csrfToken)) {
             $this->session->set(static::CSRF_TOKEN_KEY, bin2hex(random_bytes(32)));
         }
     }

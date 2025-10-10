@@ -10,21 +10,21 @@ abstract class AbstractToken extends AbstractModel
 {
     protected const EXPIRES_IN_SECONDS = 60 * 60;
 
-    protected int $id;
-    protected string $token;
-    protected string $tokenHash;
-    protected readonly \DateTimeImmutable $expiresAt;
-    protected readonly \DateTimeImmutable $createdAt;
+    public readonly int $id;
+    public readonly string $token;
+    public readonly string $token_hash;
+    public readonly \DateTimeImmutable $expires_at;
+    public readonly \DateTimeImmutable $created_at;
 
     public function __construct(
-        protected readonly string $userId,
+        public readonly string $user_id,
         ?int $expiresInSeconds = null
     ) {
         $this->token = bin2hex(random_bytes(16));
-        $this->tokenHash = static::generateTokenHash($this->token);
+        $this->token_hash = static::generateTokenHash($this->token);
         $expiry = $expiresInSeconds ?? static::EXPIRES_IN_SECONDS;
-        $this->createdAt = new \DateTimeImmutable('now');
-        $this->expiresAt = $this->createdAt->modify("+{$expiry} seconds");
+        $this->created_at = new \DateTimeImmutable('now');
+        $this->expires_at = $this->created_at->modify("+{$expiry} seconds");
     }
 
     public static function getColumns(): array
@@ -41,10 +41,10 @@ abstract class AbstractToken extends AbstractModel
         $instance = (new \ReflectionClass(static::class))->newInstanceWithoutConstructor();
         
         $instance->id = (int)$data['id'];
-        $instance->userId = $data['user_id'];
-        $instance->tokenHash = $data['token_hash'];
-        $instance->createdAt = new \DateTimeImmutable($data['created_at']);
-        $instance->expiresAt = new \DateTimeImmutable($data['expires_at']);
+        $instance->user_id = $data['user_id'];
+        $instance->token_hash = $data['token_hash'];
+        $instance->created_at = new \DateTimeImmutable($data['created_at']);
+        $instance->expires_at = new \DateTimeImmutable($data['expires_at']);
 
         return $instance;
     }
@@ -61,10 +61,10 @@ abstract class AbstractToken extends AbstractModel
      * Saves the token and captures the generated ID.
      * Overrides parent to set the ID after insert.
      */
-    public function save(): bool
+    public function save(): ?AbstractToken
     {
         $tableName = static::getTableName();
-        $columns = static::getColumnsForInsert();
+        $columns = static::getColumnsForInsert($this);
         
         $placeholders = array_map(static fn($c) => ":{$c}", $columns);
         $stmt = static::prepare(
@@ -73,10 +73,10 @@ abstract class AbstractToken extends AbstractModel
         );
         
         $ok = $stmt->execute([
-            "user_id" => $this->userId,
-            "token_hash" => $this->tokenHash,
-            "expires_at" => $this->expiresAt->format("Y-m-d H:i:s"),
-            "created_at" => $this->createdAt->format("Y-m-d H:i:s"),
+            "user_id" => $this->user_id,
+            "token_hash" => $this->token_hash,
+            "expires_at" => $this->expires_at->format("Y-m-d H:i:s"),
+            "created_at" => $this->created_at->format("Y-m-d H:i:s"),
         ]);
 
         if (!$ok) {
@@ -85,43 +85,11 @@ abstract class AbstractToken extends AbstractModel
         }
 
         $this->id = (int)static::db()->lastInsertId();
-
-        return true;
-    }
-
-    // Getters
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getUserId(): string
-    {
-        return $this->userId;
-    }
-
-    public function getRawToken(): string
-    {
-        return $this->token;
-    }
-
-    public function getTokenHash(): string
-    {
-        return $this->tokenHash;
-    }
-
-    public function getExpiresAt(): \DateTimeImmutable
-    {
-        return $this->expiresAt;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
+        return $this;
     }
 
     public function isExpired(): bool
     {
-        return new \DateTimeImmutable("now") >= $this->expiresAt;
+        return new \DateTimeImmutable("now") >= $this->expires_at;
     }
 }

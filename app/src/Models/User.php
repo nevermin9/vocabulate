@@ -21,14 +21,38 @@ class User extends AbstractModel
 {
     use UUIDTrait;
 
-    protected string $id;
-    protected string $username;
-    protected readonly string $email;
+    public readonly string $username;
+    public readonly string $email;
+    public readonly string $created_at;
     protected string $password_hash;
+    protected string $id;
     protected int $verified = 0;
     protected int $premium = 0;
     protected ?string $ai_api_key = null;
-    protected ?string $created_at = null;
+
+    public string $idBin {
+        get {
+            return $this->id;
+        }
+    }
+
+    public string $idString {
+        get {
+            return $this->convertBytesToString($this->idBin);
+        }
+    }
+
+    public string $aiApiKey {
+        get {
+            return $this->ai_api_key ?? '';
+        }
+    }
+
+    public string $passwordHash {
+        get {
+            return $this->password_hash;
+        }
+    }
 
     public function __construct(
         string $username,
@@ -66,43 +90,6 @@ class User extends AbstractModel
         return $user;
     }
 
-    public function getId(): string
-    {
-        // Returns the binary ID, which is suitable for database binding
-        return $this->id;
-    }
-
-    public function getIdString(): string
-    {
-        // Returns the human-readable UUID string
-        return static::convertBytesToString($this->id);
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    public function getPasswordHash(): string
-    {
-        return $this->password_hash;
-    }
-
-    public function getAiApiKey(): ?string
-    {
-        return $this->ai_api_key;
-    }
-
-    public function getCreatedAt(): ?string
-    {
-        return $this->created_at;
-    }
-
     public function isVerified(): bool
     {
         return (bool)$this->verified;
@@ -113,12 +100,11 @@ class User extends AbstractModel
         return (bool)$this->premium;
     }
 
-
     /**
      * Persists a new User object to the database.
-     * @return bool True on success, false otherwise (parent handles execution).
+     * @return User on success, null otherwise (parent handles execution).
      */
-    public function save(): bool
+    public function save(): ?User
     {
         $this->id = static::generateIdBytes();
         return parent::save();

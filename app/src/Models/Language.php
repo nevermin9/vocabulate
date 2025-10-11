@@ -29,4 +29,14 @@ class Language extends AbstractModel
     {
         return ['code', 'name'];
     }
+
+    public static function primaryKey(): string
+    {
+        return 'code';
+    }
+
+    protected static function usesAutoIncrementPrimaryKey(): bool
+    {
+        return false;
+    }
 }

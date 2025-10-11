@@ -2,12 +2,15 @@
     <ul class="stack-list">
         <li>
             <div class="stack">
-                <div class="stack__card  stack__card--top">
+                <div class="stack__card  stack__card--blank">
                     <button 
+                        class="stack__add-btn"
                         data-open-dialog
                         type="button"
                     >
-                        +
+                        <svg class="icon" style="--size: 36px;">
+                            <use href="#plus-thik"></use>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -28,42 +31,73 @@
         <?php endforeach; ?>
     </ul>
 
-    <dialog data-dialog>
-        <div>
+    <dialog 
+        class="app-dialog"
+        data-dialog
+    >
+        <div class="app-dialog__inner">
             <form 
                 method="post"
                 action="/stack/create"
                 class="create-stack-form"
             >
-                <label>
-                    Stack's name
-                    <input type="text" name="stack-name" required maxlength="99" />
+                <label class="create-stack-form__field app-field">
+                    <span class="app-field__label">
+                        Stack's name*
+                    </span>
+
+                    <input 
+                        class="app-field__input"
+                        type="text"
+                        name="stack-name"
+                        required 
+                        maxlength="99"
+                    />
                 </label>
 
-                <label>
-                    Words language
+                <label class="create-stack-form__field  app-field">
+                    <span class="app-field__label">
+                        Stack's language*
+                    </span>
 
-                    <select name="stack-language" required>
-                        <option
-                            value=""
-                            disabled
-                            selected
-                        >Please, select language</option>
-                        <?php foreach ($this->params['languages'] as $i => $lang): ?>
-                        <option value="<?php echo htmlspecialchars($lang->code) ?>">
-                            <?php echo htmlspecialchars($lang->name) ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div
+                        class="app-field__select-box"
+                    >
+                        <select 
+                            class="app-field__select"
+                            name="stack-language"
+                            required
+                        >
+                            <option
+                                value=""
+                                disabled
+                                selected
+                            >Please, select language</option>
+                            <?php foreach ($this->params['languages'] as $i => $lang): ?>
+                            <option value="<?php echo htmlspecialchars($lang->code) ?>">
+                                <?php echo htmlspecialchars($lang->name) ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </label>
 
-                <button formmethod="dialog" formnovalidate>
-                    cancel
-                </button>
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($this->params['csrf_token']) ?>" />
 
-                <button>
-                    submit
-                </button>
+                <div class="create-stack-form__btns-room">
+                    <button class="app-btn  app-btn--primary">
+                        Create
+                    </button>
+
+                    <button 
+                        class="app-btn app-btn--secondary"
+                        formmethod="dialog"
+                        formnovalidate
+                    >
+                        Cancel
+                    </button>
+                </div>
+
             </form>
         </div>
     </dialog>

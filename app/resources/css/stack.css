@@ -3,7 +3,6 @@
     width: 100%;
     height: 100%;
 
-
     .stack__card {
         position: relative;
         display: flex;
@@ -16,21 +15,33 @@
         z-index: 3;
         background-color: oklch(27.8% 0.033 256.848);
 
+        &.stack__card--blank {
+            border: 1px dashed var(--app-color);
+            background-color: transparent;
+        }
+
+        &.stack__card--bottom,
+        &.stack__card--middle {
+            position: absolute;
+            inset: 0;
+        }
+
+        &.stack__card--middle {
+            transform: rotate(var(--middle-rotate, 3deg));
+            z-index: 2;
+        }
+
+        &.stack__card--bottom {
+            transform: rotate(var(--bottom-rotate, 3deg));
+            z-index: 1;
+        }
     }
 
-    .stack__card.stack__card--bottom,
-    .stack__card.stack__card--middle {
-        position: absolute;
-        inset: 0;
-    }
-
-    .stack__card.stack__card--middle {
-        transform: rotate(var(--middle-rotate, 3deg));
-        z-index: 2;
-    }
-
-    .stack__card.stack__card--bottom {
-        transform: rotate(var(--bottom-rotate, 3deg));
-        z-index: 1;
+    .stack__add-btn {
+        /* font-size: ; */
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+        color: var(--app-color);
     }
 }

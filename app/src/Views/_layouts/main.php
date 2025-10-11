@@ -20,15 +20,21 @@
 
         <header class="app-header">
             <div class="app-header__inner">
+                <?php
+                $currentPath = $_SERVER['REQUEST_URI'] ?? '/';
+                $currentPath = strtok($currentPath, '?');
+                if ($currentPath !== '/'):
+                ?>
                 <a
                     class="app-link" 
-                    href="/"
+                    href="javascript:history.back()"
                 >
                     Back
                 </a>
+                <?php endif; ?>
 
                 <button 
-                    class="app-link  app-link--btn"
+                    class="app-header__edit-btn app-link  app-link--btn"
                     type="button"
                 >
                     Edit

@@ -48,4 +48,12 @@
         background-color: var(--app-blue);
         color: var(--app-white);
     }
+
+    &.app-btn--secondary {
+        background-color: transparent;
+        border-width: 2px;
+        border-style: solid;
+        border-color: var(--app-blue);
+        color: var(--app-color);
+    }
 }

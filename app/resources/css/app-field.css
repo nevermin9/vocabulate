@@ -7,7 +7,8 @@
         font-size: 0.875rem;
     }
 
-    & .app-field__input {
+    & .app-field__input,
+    & .app-field__select-box {
         width: 100%;
         padding: 0 8px;
         height: 40px;
@@ -52,5 +53,42 @@
     & .app-field__error-txt {
         color: var(--app-red);
         font-size: .65rem;
+    }
+
+    .app-field__select-box {
+        display: grid;
+        grid-template-areas: "select";
+        align-items: center;
+
+        &:has(select:focus:not(.app-field__input--invalid)) {
+            outline-color: transparent;
+            border-color: var(--app-blue);
+        }
+
+        &::after {
+            content: "";
+            grid-area: select;
+            justify-self: end;
+            width: 0.8em;
+            height: 0.5em;
+            background-color: var(--app-color);
+            clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+        }
+    }
+
+    & .app-field__select {
+        grid-area: select;
+        width: 100%;
+        padding: 0 1em 0 0;
+        border: none;
+        -webkit-appearance: none;
+        -ms-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        font-family: inherit;
+        font-size: inherit;
+        background-color: transparent;
+        outline: none;
+        cursor: pointer;
     }
 }

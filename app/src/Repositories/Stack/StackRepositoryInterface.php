@@ -12,4 +12,6 @@ interface StackRepositoryInterface
     * @return Stack[]
     */
     public function getAllAsc(string $userId): array;
+
+    public function save(Stack $stack): ?Stack;
 }

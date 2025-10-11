@@ -38,7 +38,7 @@ abstract class AbstractModel
         $columns = static::getColumns();
         
         if (static::usesAutoIncrementPrimaryKey()) {
-            return array_values(array_filter($columns, fn($col) => $col !== static::primaryKey()));
+            $columns = array_values(array_filter($columns, fn($col) => $col !== static::primaryKey()));
         }
 
         $columns = array_filter($columns, function ($col) use ($model) {
@@ -88,7 +88,6 @@ abstract class AbstractModel
 
         if (! $stmt->execute()) {
             return null;
-
         }
         
         $primaryKey = static::primaryKey();
@@ -103,7 +102,7 @@ abstract class AbstractModel
         );
         $stmt->bindValue(":id", $primaryValue);
 
-        if ($stmt->execute()) {
+        if (! $stmt->execute()) {
             return null;
         }
 

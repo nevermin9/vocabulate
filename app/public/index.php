@@ -11,13 +11,11 @@ use App\Core\Application;
 use App\Core\Config;
 use App\Core\Router;
 use App\Controllers\HomeController;
-use App\Controllers\StackOverviewController;
+use App\Controllers\StackController;
+// use App\Controllers\StackOverviewController;
 use App\Controllers\VerificationController;
 use App\Core\Container;
-use App\Middleware\AuthMiddleware;
 use App\Middleware\CSRFTokenMiddleware;
-use App\Middleware\GuestMiddleware;
-use App\Middleware\VerificationMiddleware;
 
 define('VIEWS_DIR', dirname(__DIR__) . "/src/Views");
 define('LAYOUTS_DIR', dirname(__DIR__) . "/src/Views/_layouts");
@@ -33,8 +31,9 @@ $router
         [
             AuthController::class,
             HomeController::class,
-            StackOverviewController::class,
+            // StackOverviewController::class,
             VerificationController::class,
+            StackController::class,
         ]
     )
     ->registerGlobalMiddleware([CSRFTokenMiddleware::class]);

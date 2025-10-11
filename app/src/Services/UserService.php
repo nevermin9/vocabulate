@@ -41,7 +41,7 @@ class UserService
 
     public function sendVerificationLink(User $user)
     {
-        $userId = $user->getId();
+        $userId = $user->idBin;
         $token = $this->tokenRepo->getTokenByUserId($userId, VerificationToken::class);
 
         if ($token) {
@@ -51,14 +51,14 @@ class UserService
         $token = new VerificationToken($userId);
         $this->tokenRepo->saveToken($token);
         $sender = new Addressee($this->config->mail['sender_email'], $this->config->mail['sender_name']);
-        $receiver = new Addressee($user->getEmail(), $user->getUsername());
-        $mail = new VerificationMail("Email Verification")->useTemplate(["verification_link" => "http://localhost:9095/verify?token={$token->getRawToken()}"]);
+        $receiver = new Addressee($user->email, $user->username);
+        $mail = new VerificationMail("Email Verification")->useTemplate(["verification_link" => "http://localhost:9095/verify?token={$token->token}"]);
         return $this->mailService->send($sender, $receiver, $mail);
     }
 
     public function sendResetTokenLink(User $user): bool
     {
-        $userId = $user->getId();
+        $userId = $user->idBin;
         $token = $this->tokenRepo->getTokenByUserId($userId, ForgotPasswordToken::class);
 
         if ($token) {
@@ -68,8 +68,8 @@ class UserService
         $token = new ForgotPasswordToken($userId);
         $this->tokenRepo->saveToken($token);
         $sender = new Addressee($this->config->mail['sender_email'], $this->config->mail['sender_name']);
-        $receiver = new Addressee($user->getEmail(), $user->getUsername());
-        $mail = new ResetPasswordMail("Reset Password Link")->useTemplate(["reset_link" => "http://localhost:9095/reset-password?token={$token->getRawToken()}"]);
+        $receiver = new Addressee($user->email, $user->username);
+        $mail = new ResetPasswordMail("Reset Password Link")->useTemplate(["reset_link" => "http://localhost:9095/reset-password?token={$token->token}"]);
         return $this->mailService->send($sender, $receiver, $mail);
     }
 

@@ -25,7 +25,7 @@ class TokenRepository implements TokenRepositoryInterface
         return $tokenClass::findOne(["token_hash" => $tokenHash]);
     }
 
-    public function saveToken(AbstractToken $token): bool
+    public function saveToken(AbstractToken $token): AbstractToken
     {
         return $token->save();
     }

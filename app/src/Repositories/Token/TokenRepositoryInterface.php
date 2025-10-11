@@ -8,7 +8,7 @@ interface TokenRepositoryInterface
 {
     public function getTokenByUserId(string $userId, string $tokenClass): ?AbstractToken;
     public function getTokenByHash(string $tokenHash, string $tokenClass): ?AbstractToken;
-    public function saveToken(AbstractToken $token): bool;
+    public function saveToken(AbstractToken $token): AbstractToken;
     public function deleteToken(AbstractToken $token): void;
     public function checkToken(string $rawToken, string $tokenClass): bool;
 

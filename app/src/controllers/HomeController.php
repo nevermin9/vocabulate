@@ -5,9 +5,7 @@ namespace App\Controllers;
 
 use App\Core\AbstractController;
 use App\Core\View;
-use App\Core\Enums\HttpMethod;
-use App\Core\Request;
-use App\Core\Route;
+use App\Core\Get;
 use App\Services\AuthService;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\VerificationMiddleware;
@@ -24,24 +22,16 @@ class HomeController extends AbstractController
     {
     }
 
-    #[Route(method: HttpMethod::GET, path: "/", middleware: [AuthMiddleware::class, VerificationMiddleware::class])]
+    #[Get(path: "/", middleware: [AuthMiddleware::class, VerificationMiddleware::class])]
     public function index(): View
     {
         $langs = $this->langRepo->getAllAsc();
-        $stacks = $this->stackRepo->getAllAsc($this->auth->getUserId());
+        $stacks = $this->stackRepo->getAllAsc($this->auth->getUser()->idBin);
 
         return $this->renderView("index", [
             "stacks" => $stacks,
-            "languages" => $langs
+            "languages" => $langs,
+            "csrf_token" => $this->auth->csrfToken,
         ]);
-    }
-
-    #[Route(method: HttpMethod::POST, path: "/stack/create", middleware: [AuthMiddleware::class, VerificationMiddleware::class])]
-    public function createStack(Request $req)
-    {
-        // $userId = Application::authService()->getUserId();
-        // new StackService()->createStack($userId, $req->data['stack-name'], $req->data['stack-language']);
-        redirect("/");
-        die();
     }
 }

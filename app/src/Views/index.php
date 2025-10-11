@@ -22,8 +22,8 @@
                 <div class="stack__card  stack__card--middle"></div>
 
                 <div class="stack__card  stack__card--top">
-                    <a href="/stack/<?php echo htmlspecialchars($stack['id']) ?>">
-                        <?php echo htmlspecialchars($stack['name']) ?>
+                    <a href="/stack/<?php echo htmlspecialchars($stack->id) ?>">
+                        <?php echo htmlspecialchars($stack->name) ?>
                     </a>
                 </div>
             </div>

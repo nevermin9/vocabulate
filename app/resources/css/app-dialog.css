@@ -1,0 +1,14 @@
+.app-dialog {
+    padding: 0;
+    border: 0;
+    border-radius: var(--border-radius);
+
+    &::backdrop {
+        backdrop-filter: blur(10px);
+        background: hsla(224 71.4% 4.1% / 0.58);
+    }
+
+    .app-dialog__inner {
+        padding: 32px;
+    }
+}

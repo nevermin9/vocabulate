@@ -31,6 +31,7 @@
     }
 
     .app-overlay__theme-switcher {
+        margin-bottom: 2rem;
         pointer-events: auto;
     }
 
@@ -38,12 +39,49 @@
         display: grid;
         grid-template-columns: 270px 1fr;
         grid-template-rows: 1fr;
+        gap: 3rem;
         pointer-events: auto;
     }
 
     .app-overlay__menu-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
         padding: 0;
         margin: 0;
         list-style: none;
+    }
+
+    .app-overlay__btn {
+        width: 100%;
+        padding: 16px;
+        text-align: left;
+        background-color: var(--app-bg);
+        color: var(--app-color);
+        border-radius: 16px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: transparent;
+        cursor: pointer;
+        outline-color: var(--outline-inactive);
+        outline-width: 1px;
+        outline-style: solid;
+        transition: all .2s;
+
+        &:hover {
+            outline-color: var(--app-light-blue);
+        }
+
+        &.app-overlay__btn--logout {
+            display: inline-block;
+            text-decoration: none;
+            background-color: var(--app-red-deem);
+            outline-color: var(--app-red-deem);
+            color: var(--app-white);
+
+            &:hover {
+                outline-color: var(--app-red);
+            }
+        }
     }
 }

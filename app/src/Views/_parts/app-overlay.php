@@ -11,6 +11,8 @@
             <menu class="app-overlay__menu-btns">
                 <li>
                     <button
+                        class="app-overlay__btn"
+                        data-section="profile"
                         type="button"
                     >
                         Profile
@@ -19,14 +21,29 @@
 
                 <li>
                     <button
+                        class="app-overlay__btn"
+                        data-section="security"
                         type="button"
                     >
-                        Theme
+                        Security
                     </button>
                 </li>
 
                 <li>
-                    <a href="/logout">
+                    <button
+                        class="app-overlay__btn"
+                        data-section="premium"
+                        type="button"
+                    >
+                        Premium
+                    </button>
+                </li>
+
+                <li>
+                    <a 
+                        class="app-overlay__btn  app-overlay__btn--logout"
+                        href="/logout"
+                    >
                         Logout
                     </a>
                 </li>
@@ -48,7 +65,8 @@
 <script>
 const appOverlayHandle = document.getElementById("app-overlay-handle");
 const appOverlay = document.getElementById("app-overlay");
-const INIT_TRANSLATE = -100;
+// const INIT_TRANSLATE = -100;
+const INIT_TRANSLATE = 0;
 let currentTranslate = INIT_TRANSLATE;
 let startY = 0, startTranslate = -100, isDragging = false;
 const overlayHeight = appOverlay.offsetHeight;

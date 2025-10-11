@@ -91,20 +91,6 @@ appOverlayHandle.addEventListener("pointermove", (e) => {
     appOverlay.style.transform = `translateY(${newTranslate}%)`;
     currentTranslate = newTranslate;
 });
-
-// appOverlayHandle.addEventListener("pointerup", (e) => {
-//     isDragging = false;
-//     currentTranslate = currentTranslate > -50 ? 0 : INIT_TRANSLATE;
-//     appOverlay.style.transform = `translateY(${currentTranslate}%)`;
-//     appOverlayHandle.releasePointerCapture(e.pointerId);
-//
-//     appOverlay.addEventListener("pointerdown", (e) => {
-//         if (e.target === appOverlay) {
-//             appOverlay.style.transform = `translateY(${INIT_TRANSLATE}%)`;
-//             currentTranslate = INIT_TRANSLATE;
-//         }
-//     }, { once: true });
-// });
 </script>
 
 

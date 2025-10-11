@@ -11,7 +11,7 @@
             <menu class="app-overlay__menu-btns">
                 <li>
                     <button
-                        class="app-overlay__btn"
+                        class="app-overlay__btn active"
                         data-section="profile"
                         type="button"
                     >
@@ -34,6 +34,7 @@
                         class="app-overlay__btn"
                         data-section="premium"
                         type="button"
+                        disabled
                     >
                         Premium
                     </button>
@@ -50,8 +51,14 @@
             </menu>
 
             <div class="app-overlay__menu">
-                <input type="text" />
-
+                <section
+                    id="profile-section"
+                    class="settings-section"
+                    data-order="1"
+                >
+                    <!-- <php include __DIR__ . "/_overlay-parts/profile-form.php"; ?> -->
+                    <?php include __DIR__ . "/_overlay-parts/security-form.php"; ?>
+                </section>
             </div>
         </div>
     </div>

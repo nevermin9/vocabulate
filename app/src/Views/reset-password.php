@@ -96,7 +96,6 @@
 
             <button 
                 class="auth-form__btn  app-btn app-btn--primary"
-                value="signup"
             >
                 Change password
             </button>

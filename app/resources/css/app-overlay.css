@@ -72,12 +72,27 @@
             outline-color: var(--app-light-blue);
         }
 
+        &:disabled {
+            cursor: not-allowed;
+            filter: grayscale(80%) opacity(0.6);
+            pointer-events: none; 
+            outline-color: var(--outline-inactive);
+        }
+
+        &.active {
+            background-color: var(--app-blue);
+            outline-color: var(--app-blue);
+            color: var(--app-white);
+        }
+
         &.app-overlay__btn--logout {
+            margin-top: 2rem;
             display: inline-block;
             text-decoration: none;
             background-color: var(--app-red-deem);
             outline-color: var(--app-red-deem);
             color: var(--app-white);
+            text-align: center;
 
             &:hover {
                 outline-color: var(--app-red);

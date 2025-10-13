@@ -1,0 +1,3 @@
+2025-10-13 11:10:56.166 osascript[22078:23614324] +[NSXPCSharedListener endpointForReply:withListenerName:replyErrorCode:]: an error occurred while attempting to obtain endpoint for listener 'ClientCallsAuxiliary': Connection invalid
+2025-10-13 11:11:00.777 osascript[22078:23614324] HIToolbox: received notification of WindowServer event port death.
+2025-10-13 11:11:00.777 osascript[22078:23614324] port matched the WindowServer port created in BindCGSToRunLoop

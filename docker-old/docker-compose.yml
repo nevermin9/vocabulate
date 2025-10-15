@@ -2,7 +2,7 @@ services:
   php:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: docker-old/Dockerfile.dev
     container_name: vocabulate-php
     # depends_on:
     #   - nginx

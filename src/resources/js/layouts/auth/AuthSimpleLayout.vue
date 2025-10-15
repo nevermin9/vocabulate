@@ -36,6 +36,7 @@ defineProps<{
                         </p>
                     </div>
                 </div>
+
                 <slot />
             </div>
         </div>

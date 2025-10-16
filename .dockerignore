@@ -1,4 +1,12 @@
+**/node_modules/
 **/tests/
 **/vendor/
-**/storage/
 **/.env
+
+.git
+.gitignore
+.DS_Store
+.editorconfig
+.phpunit.result.cache
+.vscode/
+**/phpunit.xml

@@ -33,7 +33,9 @@
     --app-color-dark: var(--app-white);
 
     --border-radius: 8px;
+
     --outline-inactive: light-dark(var(--app-light-gray),var(--app-light-stone));
+
     --input-bg: light-dark(var(--app-light-stone-2), var(--app-stone));
 
     --app-bg: light-dark(var(--app-bg-light), var(--app-bg-dark));

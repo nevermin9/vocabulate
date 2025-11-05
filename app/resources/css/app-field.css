@@ -9,36 +9,37 @@
 
     & .app-field__input,
     & .app-field__select-box {
-        width: 100%;
-        padding: 0 8px;
-        height: 40px;
-        border-width: 2px;
-        border-style: solid;
-        border-color: transparent;
-        border-radius: var(--border-radius);
-        outline-color: var(--outline-inactive);
-        outline-width: 1px;
-        outline-style: solid;
-        background-color: var(--input-bg);
-        transition: .2s;
+        /* width: 100%; */
+        /* padding: 0 8px; */
+        /* height: 40px; */
+        /* border-width: 2px; */
+        /* border-style: solid; */
+        /* border-color: transparent; */
+        /* border-radius: var(--border-radius); */
+        /* outline-color: var(--outline-inactive); */
+        /* outline-width: 1px; */
+        /* outline-style: solid; */
 
-        &:hover {
-            outline-color: var(--app-light-blue);
-        }
+        /* background-color: var(--input-bg); */
+        /* transition: .2s; */
 
-        &:focus:not(&:user-invalid):not(.app-field__input--invalid) {
-            outline-color: transparent;
-            border-color: var(--app-blue);
-        }
+        /* &:hover { */
+        /*     outline-color: var(--app-light-blue); */
+        /* } */
 
-        &:user-invalid {
-            outline-color: var(--app-red);
-        }
+        /* &:focus:not(&:user-invalid):not(.app-field__input--invalid) { */
+        /*     outline-color: transparent; */
+        /*     border-color: var(--app-blue); */
+        /* } */
 
-        &:user-invalid:focus {
-            border-color: var(--app-red);
-            outline-color: transparent;
-        }
+        /* &:user-invalid { */
+        /*     outline-color: var(--app-red); */
+        /* } */
+        /**/
+        /* &:user-invalid:focus { */
+        /*     border-color: var(--app-red); */
+        /*     outline-color: transparent; */
+        /* } */
 
         &.app-field__input--invalid {
             outline-color: var(--app-red);

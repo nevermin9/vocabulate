@@ -299,22 +299,22 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.3.tgz#c2b9d2e374ee62c586d3adbea87199b1d7a7a6ba"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
-"@inertiajs/core@2.2.8":
-  version "2.2.8"
-  resolved "https://registry.yarnpkg.com/@inertiajs/core/-/core-2.2.8.tgz#8d88a49cc6604372f74160b9d990f829585afdeb"
-  integrity sha512-sN6ArjsDajohctU7j17lsnSk5j3otDDSuR0JgtJxUftNcV3mv51XTKm/IHM3zdHYhq4rpvgHlr9epUqp7tMnxQ==
+"@inertiajs/core@2.2.15":
+  version "2.2.15"
+  resolved "https://registry.yarnpkg.com/@inertiajs/core/-/core-2.2.15.tgz#e7c02b70f70e49af71a433d54b92c3000d157fed"
+  integrity sha512-0hj2oBWzj2Z2+UMTrqBMrRrlgoPZsqru7E9FEiR+zkOTywhuV0izJi/rAbmGBIxPAz9v3zMN/wrAy4293xBZoQ==
   dependencies:
     "@types/lodash-es" "^4.17.12"
     axios "^1.12.2"
     lodash-es "^4.17.21"
     qs "^6.14.0"
 
-"@inertiajs/vue3@^2.1.0":
-  version "2.2.8"
-  resolved "https://registry.yarnpkg.com/@inertiajs/vue3/-/vue3-2.2.8.tgz#c4b7fab6c25f607ed8c8e4d9f20b6cb5738e8275"
-  integrity sha512-/UuXIsreUF/bMnzYtv/faYJeQGJ2W1AnJhQCtMpJiSUZS9bhZuM3DWspJfdKsL9G7BV9LaVVm+Z+uER8SEZQDg==
+"@inertiajs/vue3@^2.2.15":
+  version "2.2.15"
+  resolved "https://registry.yarnpkg.com/@inertiajs/vue3/-/vue3-2.2.15.tgz#bc7291148ec9f74118843d88ab2e9bb19621eb9b"
+  integrity sha512-DINuy5KeubhrEtAeAXEroh7+sxBZvXKLTJfo9UEOMgg0FQgM0qbbhhOKDZjWe2iGDP2hGq6A4zMfma4u0huNBQ==
   dependencies:
-    "@inertiajs/core" "2.2.8"
+    "@inertiajs/core" "2.2.15"
     "@types/lodash-es" "^4.17.12"
     lodash-es "^4.17.21"
 
@@ -1013,9 +1013,9 @@ asynckit@^0.4.0:
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
 axios@^1.12.2:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
-  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.2.tgz#9ada120b7b5ab24509553ec3e40123521117f687"
+  integrity sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.4"

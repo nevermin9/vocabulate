@@ -20,9 +20,11 @@ createInertiaApp({
             .use(plugin)
             .mount(el);
     },
-    progress: {
-        color: '#4B5563',
-    },
+    defaults: {
+        visitOptions: () => {
+            return { viewTransition: true };
+        }
+    }
 });
 
 // This will set light / dark mode on page load...

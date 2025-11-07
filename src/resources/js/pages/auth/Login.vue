@@ -41,6 +41,7 @@ defineProps<{
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">Email address</Label>
+
                     <Input
                         id="email"
                         type="email"
@@ -51,6 +52,7 @@ defineProps<{
                         autocomplete="email"
                         placeholder="email@example.com"
                     />
+
                     <InputError :message="errors.email" />
                 </div>
 
@@ -81,6 +83,7 @@ defineProps<{
                 <div class="flex items-center justify-between">
                     <Label for="remember" class="flex items-center space-x-3">
                         <Checkbox id="remember" name="remember" :tabindex="3" />
+
                         <span>Remember me</span>
                     </Label>
                 </div>

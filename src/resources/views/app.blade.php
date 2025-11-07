@@ -30,7 +30,9 @@
             }
         </style>
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>
+            {{ config('app.name', 'Laravel') }}
+        </title>
 
         <link rel="manifest" href="/site.webmanifest">
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, computed } from "vue";
 import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -16,6 +17,10 @@ defineProps<{
     status?: string;
     canResetPassword: boolean;
 }>();
+
+const isPasswordShown = ref(false);
+
+const passwordInputType = computed(() => isPasswordShown.value ? 'text' : 'password');
 </script>
 
 <template>
@@ -70,7 +75,7 @@ defineProps<{
                     </div>
                     <Input
                         id="password"
-                        type="password"
+                        :type="passwordInputType"
                         name="password"
                         required
                         :tabindex="2"
@@ -83,6 +88,7 @@ defineProps<{
                 <div class="flex items-center justify-between">
                     <Label for="show-password" class="group flex items-center cursor-pointer">
                         <Checkbox
+                            v-model="isPasswordShown"
                             id="show-password"
                             name="show-password"
                             :tabindex="3"

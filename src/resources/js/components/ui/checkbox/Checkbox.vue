@@ -26,7 +26,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
             'border-2 border-solid border-transparent focus-visible:not-user-invalid:not-aria-invalid:border-border',
             'size-4 shrink-0 rounded-[4px] shadow-xs transition-all transition-200',
             'outline outline-solid outline-ring hover:not-user-invalid:not-aria-invalid:outline-ring-active focus-visible:not-user-invalid:not-aria-invalid:outline-transparent',
-            'data-[state=checked]:border-primary data-[state=checked]:outline-none',
+            'data-[state=checked]:border-primary data-[state=checked]:outline-primary',
             'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
             'disabled:cursor-not-allowed disabled:opacity-50',
             props.class)"

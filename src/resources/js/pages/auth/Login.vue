@@ -81,8 +81,24 @@ defineProps<{
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <Label for="remember" class="flex items-center space-x-3">
-                        <Checkbox id="remember" name="remember" :tabindex="3" />
+                    <Label for="show-password" class="group flex items-center cursor-pointer">
+                        <Checkbox
+                            id="show-password"
+                            name="show-password"
+                            :tabindex="3"
+                        />
+
+                        <span>Show password</span>
+                    </Label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <Label for="remember" class="group flex items-center cursor-pointer">
+                        <Checkbox
+                            id="remember"
+                            name="remember"
+                            :tabindex="4"
+                        />
 
                         <span>Remember me</span>
                     </Label>

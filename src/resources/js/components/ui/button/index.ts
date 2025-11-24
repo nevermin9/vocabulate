@@ -21,9 +21,9 @@ export const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                'bg-primary text-primary-foreground shadow-xs ',
+                'bg-primary text-primary-foreground shadow-xs',
                 destructive:
-                'bg-destructive text-white shadow-xs focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
+                'bg-destructive text-primary-foreground shadow-xs focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
                 outline:
                 'border bg-background shadow-xs dark:bg-input/30 dark:border-input',
                 secondary:

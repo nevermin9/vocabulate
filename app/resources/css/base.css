@@ -39,6 +39,7 @@
     --input-bg: light-dark(var(--app-light-stone-2), var(--app-stone));
 
     --app-bg: light-dark(var(--app-bg-light), var(--app-bg-dark));
+
     --app-color: light-dark(var(--app-color-light), var(--app-color-dark));
 }
 
